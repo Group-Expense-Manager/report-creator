@@ -6,10 +6,10 @@ import java.math.BigDecimal
 
 data class BalancesResponse(
     val groupId: String,
-    val balances: List<BalancesDto>,
+    val groupBalances: List<GroupBalancesDto>,
 )
 
-data class BalancesDto(
+data class GroupBalancesDto(
     val currency: String,
     val userBalances: List<UserBalanceDto>,
 )
@@ -20,7 +20,7 @@ data class UserBalanceDto(
 )
 
 fun BalancesResponse.toDomain() =
-        balances.map { 
+        groupBalances.map { 
             Balances(
                     currency = it.currency,
                     users = it.userBalances.map { user -> Balance(userId = user.userId, value = user.value) }

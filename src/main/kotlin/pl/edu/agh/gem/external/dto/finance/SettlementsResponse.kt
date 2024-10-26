@@ -7,10 +7,10 @@ import java.math.BigDecimal
 
 data class SettlementsResponse(
     val groupId: String,
-    val settlements: List<SettlementsDto>,
+    val groupSettlements: List<GroupSettlementsDto>,
 )
 
-data class SettlementsDto(
+data class GroupSettlementsDto(
     val status: SettlementStatus,
     val currency: String,
     val settlements: List<SettlementDto>,
@@ -23,7 +23,7 @@ data class SettlementDto(
 )
 
 fun SettlementsResponse.toDomain() =
-        settlements.map { 
+        groupSettlements.map { 
             Settlements(
                     currency = it.currency,
                     status = it.status,
