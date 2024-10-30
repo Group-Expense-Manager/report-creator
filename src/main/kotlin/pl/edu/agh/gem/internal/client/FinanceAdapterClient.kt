@@ -1,13 +1,13 @@
 package pl.edu.agh.gem.internal.client
 
-import pl.edu.agh.gem.internal.model.finance.Activity
-import pl.edu.agh.gem.internal.model.finance.Balances
-import pl.edu.agh.gem.internal.model.finance.Settlements
+import pl.edu.agh.gem.internal.model.finance.GroupActivities
+import pl.edu.agh.gem.internal.model.finance.GroupBalances
+import pl.edu.agh.gem.internal.model.finance.GroupSettlements
 
 interface FinanceAdapterClient {
-    fun getActivities(groupId:String): List<Activity>
-    fun getBalances(groupId: String): List<Balances>
-    fun getSettlements(groupId: String): List<Settlements>
+    fun getActivities(groupId: String): List<GroupActivities>
+    fun getBalances(groupId: String): List<GroupBalances>
+    fun getSettlements(groupId: String): List<GroupSettlements>
 }
 
 class FinanceAdapterClientException(override val message: String?) : RuntimeException()

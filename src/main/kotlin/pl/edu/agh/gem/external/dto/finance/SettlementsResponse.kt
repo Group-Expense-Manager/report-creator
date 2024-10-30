@@ -1,8 +1,8 @@
 package pl.edu.agh.gem.external.dto.finance
 
+import pl.edu.agh.gem.internal.model.finance.GroupSettlements
 import pl.edu.agh.gem.internal.model.finance.Settlement
 import pl.edu.agh.gem.internal.model.finance.SettlementStatus
-import pl.edu.agh.gem.internal.model.finance.Settlements
 import java.math.BigDecimal
 
 data class SettlementsResponse(
@@ -23,10 +23,16 @@ data class SettlementDto(
 )
 
 fun SettlementsResponse.toDomain() =
-        groupSettlements.map { 
-            Settlements(
-                    currency = it.currency,
-                    status = it.status,
-                    settlements = it.settlements.map { settlement -> Settlement(fromUserId = settlement.fromUserId, toUserId = settlement.toUserId, value = settlement.value) }
-            )
-        }
+    groupSettlements.map {
+        GroupSettlements(
+            currency = it.currency,
+            status = it.status,
+            settlements = it.settlements.map { settlement ->
+                Settlement(
+                    fromUserId = settlement.fromUserId,
+                    toUserId = settlement.toUserId,
+                    value = settlement.value,
+                )
+            },
+        )
+    }

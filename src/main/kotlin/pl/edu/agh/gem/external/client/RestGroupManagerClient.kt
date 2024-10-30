@@ -13,13 +13,14 @@ import org.springframework.web.client.RestTemplate
 import pl.edu.agh.gem.config.GroupManagerProperties
 import pl.edu.agh.gem.external.dto.group.GroupResponse
 import pl.edu.agh.gem.external.dto.group.UserGroupsResponse
+import pl.edu.agh.gem.external.dto.group.toDomain
 import pl.edu.agh.gem.headers.HeadersUtils.withAppAcceptType
 import pl.edu.agh.gem.headers.HeadersUtils.withAppContentType
 import pl.edu.agh.gem.internal.client.GroupManagerClient
 import pl.edu.agh.gem.internal.client.GroupManagerClientException
 import pl.edu.agh.gem.internal.client.RetryableGroupManagerClientException
 import pl.edu.agh.gem.internal.model.group.Group
-import pl.edu.agh.gem.internal.model.group.GroupData
+import pl.edu.agh.gem.internal.model.group.GroupDetails
 import pl.edu.agh.gem.paths.Paths.INTERNAL
 
 @Component
@@ -49,8 +50,8 @@ class RestGroupManagerClient(
         }
     }
 
-    @Retry(name = "groupManagerClient")
-    override fun getGroup(groupId: String): GroupData {
+    @Retry(name = "groupManager")
+    override fun getGroupDetails(groupId: String): GroupDetails {
         return try {
             restTemplate.exchange(
                 resolveGroupAddress(groupId),

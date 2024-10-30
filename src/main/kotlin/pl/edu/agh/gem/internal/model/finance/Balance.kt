@@ -2,8 +2,8 @@ package pl.edu.agh.gem.internal.model.finance
 
 import java.math.BigDecimal
 
-data class Balances(
-    val users: List<Balance>,
+data class GroupBalances(
+    val balances: List<Balance>,
     val currency: String,
 )
 data class Balance(

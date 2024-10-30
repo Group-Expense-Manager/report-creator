@@ -2,9 +2,11 @@ package pl.edu.agh.gem.internal.model.group
 
 import pl.edu.agh.gem.model.GroupMember
 
-data class GroupData(
+data class GroupDetails(
     val members: List<GroupMember>,
-    val currencies: List<Currency>,
+    val groupCurrencies: List<Currency>,
+    val name: String,
+    val attachmentId: String,
 )
 
 data class Currency(

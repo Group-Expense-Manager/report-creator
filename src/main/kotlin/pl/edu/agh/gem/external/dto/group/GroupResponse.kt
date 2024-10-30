@@ -1,23 +1,27 @@
 package pl.edu.agh.gem.external.dto.group
 
 import pl.edu.agh.gem.internal.model.group.Currency
-import pl.edu.agh.gem.internal.model.group.GroupData
+import pl.edu.agh.gem.internal.model.group.GroupDetails
 import pl.edu.agh.gem.model.GroupMember
 
 data class GroupResponse(
-    val members: List<MemberDTO>,
-    val groupCurrencies: List<CurrencyDTO>,
-) {
-    fun toDomain() = GroupData(
-        members = members.map { GroupMember(it.id) },
-        currencies = groupCurrencies.map { Currency(it.code) },
-    )
-}
+    val members: List<MemberDto>,
+    val groupCurrencies: List<CurrencyDto>,
+    val name: String,
+    val attachmentId: String,
+)
 
-data class MemberDTO(
+data class MemberDto(
     val id: String,
 )
 
-data class CurrencyDTO(
+data class CurrencyDto(
     val code: String,
+)
+
+fun GroupResponse.toDomain() = GroupDetails(
+    members = members.map { GroupMember(it.id) },
+    groupCurrencies = groupCurrencies.map { Currency(it.code) },
+    name = name,
+    attachmentId = attachmentId,
 )

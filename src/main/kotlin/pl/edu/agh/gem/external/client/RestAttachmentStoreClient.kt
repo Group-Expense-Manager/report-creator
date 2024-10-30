@@ -10,6 +10,7 @@ import org.springframework.http.HttpMethod.POST
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
 import pl.edu.agh.gem.config.AttachmentStoreProperties
 import pl.edu.agh.gem.external.dto.attachment.AttachmentResponse
@@ -26,22 +27,18 @@ class RestAttachmentStoreClient(
     @Qualifier("AttachmentStoreRestTemplate") val restTemplate: RestTemplate,
     val attachmentStoreProperties: AttachmentStoreProperties,
 ) : AttachmentStoreClient {
-    
+
     private fun resolveUploadAttachmentAddress(groupId: String) =
-        "${attachmentStoreProperties.url}$INTERNAL/expenses/activities/groups/$groupId"
-    
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+        "${attachmentStoreProperties.url}$INTERNAL/groups/$groupId"
 
     @Retry(name = "attachmentStore")
-    override fun uploadAttachment(groupId: String,file: Binary): Attachment {
+    override fun uploadAttachment(groupId: String, file: Binary): Attachment {
         return try {
             restTemplate.exchange(
-                    resolveUploadAttachmentAddress(groupId),
-                    POST,
-                    HttpEntity(file,HttpHeaders().withAppAcceptType()),
-                    AttachmentResponse::class.java,
+                resolveUploadAttachmentAddress(groupId),
+                POST,
+                HttpEntity(file, HttpHeaders().withAppAcceptType()),
+                AttachmentResponse::class.java,
             ).body?.toDomain() ?: throw AttachmentStoreClientException("While trying to upload attachment we receive empty body")
         } catch (ex: HttpClientErrorException) {
             logger.warn(ex) { "Client side exception while trying to upload attachment" }
@@ -49,9 +46,16 @@ class RestAttachmentStoreClient(
         } catch (ex: HttpServerErrorException) {
             logger.warn(ex) { "Server side exception while trying to upload attachment" }
             throw RetryableAttachmentStoreClientException(ex.message)
+        } catch (ex: ResourceAccessException) {
+            logger.warn(ex) { "Resource access exception while trying to upload attachment" }
+            throw RetryableAttachmentStoreClientException(ex.message)
         } catch (ex: Exception) {
             logger.warn(ex) { "Unexpected exception while trying to upload attachment" }
             throw AttachmentStoreClientException(ex.message)
         }
+    }
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 }

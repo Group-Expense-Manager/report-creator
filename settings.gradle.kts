@@ -54,11 +54,11 @@ dependencyResolutionManagement {
                 ),
             )
             bundle(
+                "poi",
+                listOf(
                     "poi",
-                    listOf(
-                            "poi",
-                            "poi-ooxml",
-                    ),
+                    "poi-ooxml",
+                ),
             )
         }
         create("testlibs") {

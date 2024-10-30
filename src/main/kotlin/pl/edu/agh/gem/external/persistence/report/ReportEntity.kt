@@ -3,17 +3,18 @@ package pl.edu.agh.gem.external.persistence.report
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import pl.edu.agh.gem.internal.model.report.Report
+import pl.edu.agh.gem.internal.model.report.ReportFormat
 import java.time.Instant
 
 @Document("reports")
 data class ReportEntity(
     @Id
-    val id:String,
-    val groupId:String,
-    val format:String,
-    val creatorId:String,
+    val id: String,
+    val groupId: String,
+    val format: ReportFormat,
+    val creatorId: String,
     val createdAt: Instant,
-    val attachmentId: String
+    val attachmentId: String,
 )
 
 fun ReportEntity.toDomain(): Report {
@@ -23,7 +24,7 @@ fun ReportEntity.toDomain(): Report {
         format = format,
         creatorId = creatorId,
         createdAt = createdAt,
-        attachmentId = attachmentId
+        attachmentId = attachmentId,
     )
 }
 
@@ -34,6 +35,6 @@ fun Report.toEntity(): ReportEntity {
         format = format,
         creatorId = creatorId,
         createdAt = createdAt,
-        attachmentId = attachmentId
+        attachmentId = attachmentId,
     )
 }

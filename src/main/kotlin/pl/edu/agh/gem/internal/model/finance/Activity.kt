@@ -3,13 +3,18 @@ package pl.edu.agh.gem.internal.model.finance
 import java.math.BigDecimal
 import java.time.Instant
 
+data class GroupActivities(
+    val groupId: String,
+    val activities: List<Activity>,
+    val currency: String,
+)
+
 data class Activity(
-    val activityId: String,
+    val id: String,
     val type: ActivityType,
     val creatorId: String,
     val title: String,
     val value: BigDecimal,
-    val currency: String,
     val status: ActivityStatus,
     val participantIds: List<String>,
     val date: Instant,

@@ -2,11 +2,12 @@ package pl.edu.agh.gem.internal.model.finance
 
 import java.math.BigDecimal
 
-data class Settlements(
+data class GroupSettlements(
     val settlements: List<Settlement>,
     val currency: String,
     val status: SettlementStatus,
 )
+
 data class Settlement(
     val fromUserId: String,
     val toUserId: String,

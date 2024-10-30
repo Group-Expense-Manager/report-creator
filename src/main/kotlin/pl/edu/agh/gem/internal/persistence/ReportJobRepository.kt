@@ -10,6 +10,6 @@ interface ReportJobRepository {
     fun findById(id: String): ReportJob?
 }
 
-class MissingReconciliationJobException(reportJob: ReportJob) : RuntimeException(
+class MissingReportJobException(reportJob: ReportJob) : RuntimeException(
     "No report job found, $reportJob",
 )

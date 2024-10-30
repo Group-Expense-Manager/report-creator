@@ -16,5 +16,4 @@ class MongoReportRepository(
     override fun getReport(reportId: String): Report? {
         return mongoOperations.findById(reportId, ReportEntity::class.java)?.toDomain()
     }
-
 }

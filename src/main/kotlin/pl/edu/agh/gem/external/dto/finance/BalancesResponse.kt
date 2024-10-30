@@ -1,7 +1,7 @@
 package pl.edu.agh.gem.external.dto.finance
 
 import pl.edu.agh.gem.internal.model.finance.Balance
-import pl.edu.agh.gem.internal.model.finance.Balances
+import pl.edu.agh.gem.internal.model.finance.GroupBalances
 import java.math.BigDecimal
 
 data class BalancesResponse(
@@ -20,10 +20,9 @@ data class UserBalanceDto(
 )
 
 fun BalancesResponse.toDomain() =
-        groupBalances.map { 
-            Balances(
-                    currency = it.currency,
-                    users = it.userBalances.map { user -> Balance(userId = user.userId, value = user.value) }
-            )
-        }
-
+    groupBalances.map {
+        GroupBalances(
+            currency = it.currency,
+            balances = it.userBalances.map { user -> Balance(userId = user.userId, value = user.value) },
+        )
+    }

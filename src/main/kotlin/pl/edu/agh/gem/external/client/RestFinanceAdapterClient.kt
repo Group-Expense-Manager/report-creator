@@ -19,9 +19,9 @@ import pl.edu.agh.gem.headers.HeadersUtils.withAppAcceptType
 import pl.edu.agh.gem.internal.client.FinanceAdapterClient
 import pl.edu.agh.gem.internal.client.FinanceAdapterClientException
 import pl.edu.agh.gem.internal.client.RetryableFinanceAdapterClientException
-import pl.edu.agh.gem.internal.model.finance.Activity
-import pl.edu.agh.gem.internal.model.finance.Balances
-import pl.edu.agh.gem.internal.model.finance.Settlements
+import pl.edu.agh.gem.internal.model.finance.GroupActivities
+import pl.edu.agh.gem.internal.model.finance.GroupBalances
+import pl.edu.agh.gem.internal.model.finance.GroupSettlements
 import pl.edu.agh.gem.paths.Paths.INTERNAL
 
 @Component
@@ -31,7 +31,7 @@ class RestFinanceAdapterClient(
 ) : FinanceAdapterClient {
 
     @Retry(name = "financeAdapter")
-    override fun getActivities(groupId: String): List<Activity> {
+    override fun getActivities(groupId: String): List<GroupActivities> {
         return try {
             restTemplate.exchange(
                 resolveActivitiesAddress(groupId),
@@ -50,15 +50,15 @@ class RestFinanceAdapterClient(
             throw FinanceAdapterClientException(ex.message)
         }
     }
-    
+
     @Retry(name = "financeAdapter")
-    override fun getBalances(groupId: String): List<Balances> {
+    override fun getBalances(groupId: String): List<GroupBalances> {
         return try {
             restTemplate.exchange(
-                    resolveBalancesAddress(groupId),
-                    GET,
-                    HttpEntity<Any>(HttpHeaders().withAppAcceptType()),
-                    BalancesResponse::class.java,
+                resolveBalancesAddress(groupId),
+                GET,
+                HttpEntity<Any>(HttpHeaders().withAppAcceptType()),
+                BalancesResponse::class.java,
             ).body?.toDomain() ?: throw FinanceAdapterClientException("While trying to retrieve balances we receive empty body")
         } catch (ex: HttpClientErrorException) {
             logger.warn(ex) { "Client side exception while trying to retrieve balances" }
@@ -73,13 +73,13 @@ class RestFinanceAdapterClient(
     }
 
     @Retry(name = "financeAdapter")
-    override fun getSettlements(groupId: String): List<Settlements> {
+    override fun getSettlements(groupId: String): List<GroupSettlements> {
         return try {
             restTemplate.exchange(
-                    resolveSettlementsAddress(groupId),
-                    GET,
-                    HttpEntity<Any>(HttpHeaders().withAppAcceptType()),
-                    SettlementsResponse::class.java,
+                resolveSettlementsAddress(groupId),
+                GET,
+                HttpEntity<Any>(HttpHeaders().withAppAcceptType()),
+                SettlementsResponse::class.java,
             ).body?.toDomain() ?: throw FinanceAdapterClientException("While trying to retrieve settlements we receive empty body")
         } catch (ex: HttpClientErrorException) {
             logger.warn(ex) { "Client side exception while trying to retrieve settlements" }
@@ -94,14 +94,14 @@ class RestFinanceAdapterClient(
     }
 
     private fun resolveActivitiesAddress(groupId: String) =
-        "${financeAdapterProperties.url}$INTERNAL/expenses/activities/groups/$groupId"
+        "${financeAdapterProperties.url}$INTERNAL/expenses/groups/$groupId"
 
     private fun resolveBalancesAddress(groupId: String) =
-            "${financeAdapterProperties.url}$INTERNAL/balances/activities/groups/$groupId"
+        "${financeAdapterProperties.url}$INTERNAL/balances/groups/$groupId"
 
     private fun resolveSettlementsAddress(groupId: String) =
-            "${financeAdapterProperties.url}$INTERNAL/settlements/activities/groups/$groupId"
-    
+        "${financeAdapterProperties.url}$INTERNAL/settlements/groups/$groupId"
+
     companion object {
         private val logger = KotlinLogging.logger {}
     }

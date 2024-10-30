@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.stereotype.Repository
 import pl.edu.agh.gem.config.ReportJobProcessorProperties
 import pl.edu.agh.gem.internal.model.report.ReportJob
-import pl.edu.agh.gem.internal.persistence.MissingReconciliationJobException
+import pl.edu.agh.gem.internal.persistence.MissingReportJobException
 import pl.edu.agh.gem.internal.persistence.ReportJobRepository
 import java.time.Clock
 import java.time.Duration
@@ -40,7 +40,7 @@ class MongoReportJobRepository(
         val options = FindAndModifyOptions.options().returnNew(true).upsert(false)
         mongoOperations.findAll(ReportJobEntity::class.java)
         return mongoOperations.findAndModify(query, update, options, ReportJobEntity::class.java)?.toDomain()
-            ?: throw MissingReconciliationJobException(reportJob)
+            ?: throw MissingReportJobException(reportJob)
     }
 
     override fun remove(reportJob: ReportJob) {
@@ -51,7 +51,7 @@ class MongoReportJobRepository(
     override fun findById(id: String): ReportJob? {
         return mongoOperations.findById(id, ReportJobEntity::class.java)?.toDomain()
     }
-    
+
     private fun getDelay(retry: Long): Duration {
         return reportJobProcessorProperties
             .retryDelays

@@ -9,7 +9,7 @@ import pl.edu.agh.gem.helper.http.GemRestTemplateFactory
 import java.time.Duration
 
 @Configuration
-class ClientConfig{
+class ClientConfig {
 
     @Bean
     @Qualifier("GroupManagerRestTemplate")
@@ -18,12 +18,38 @@ class ClientConfig{
         gemRestTemplateFactory: GemRestTemplateFactory,
     ): RestTemplate {
         return gemRestTemplateFactory
-                .builder()
-                .withReadTimeout(groupManagerProperties.readTimeout)
-                .withConnectTimeout(groupManagerProperties.connectTimeout)
-                .build()
+            .builder()
+            .withReadTimeout(groupManagerProperties.readTimeout)
+            .withConnectTimeout(groupManagerProperties.connectTimeout)
+            .build()
     }
-    
+
+    @Bean
+    @Qualifier("UserDetailsManagerRestTemplate")
+    fun userDetailsManagerRestTemplate(
+        userDetailsManagerProperties: UserDetailsManagerProperties,
+        gemRestTemplateFactory: GemRestTemplateFactory,
+    ): RestTemplate {
+        return gemRestTemplateFactory
+            .builder()
+            .withReadTimeout(userDetailsManagerProperties.readTimeout)
+            .withConnectTimeout(userDetailsManagerProperties.connectTimeout)
+            .build()
+    }
+
+    @Bean
+    @Qualifier("EmailSenderRestTemplate")
+    fun emailSenderRestTemplate(
+        emailSenderProperties: EmailSenderProperties,
+        gemRestTemplateFactory: GemRestTemplateFactory,
+    ): RestTemplate {
+        return gemRestTemplateFactory
+            .builder()
+            .withReadTimeout(emailSenderProperties.readTimeout)
+            .withConnectTimeout(emailSenderProperties.connectTimeout)
+            .build()
+    }
+
     @Bean
     @Qualifier("FinanceAdapterRestTemplate")
     fun financeAdapterRestTemplate(
@@ -31,10 +57,10 @@ class ClientConfig{
         gemRestTemplateFactory: GemRestTemplateFactory,
     ): RestTemplate {
         return gemRestTemplateFactory
-                .builder()
-                .withReadTimeout(financeAdapterProperties.readTimeout)
-                .withConnectTimeout(financeAdapterProperties.connectTimeout)
-                .build()
+            .builder()
+            .withReadTimeout(financeAdapterProperties.readTimeout)
+            .withConnectTimeout(financeAdapterProperties.connectTimeout)
+            .build()
     }
 
     @Bean
@@ -44,15 +70,29 @@ class ClientConfig{
         gemRestTemplateFactory: GemRestTemplateFactory,
     ): RestTemplate {
         return gemRestTemplateFactory
-                .builder()
-                .withReadTimeout(attachmentStoreProperties.readTimeout)
-                .withConnectTimeout(attachmentStoreProperties.connectTimeout)
-                .build()
+            .builder()
+            .withReadTimeout(attachmentStoreProperties.readTimeout)
+            .withConnectTimeout(attachmentStoreProperties.connectTimeout)
+            .build()
     }
 }
 
 @ConfigurationProperties(prefix = "group-manager")
 data class GroupManagerProperties(
+    val url: String,
+    val connectTimeout: Duration,
+    val readTimeout: Duration,
+)
+
+@ConfigurationProperties(prefix = "user-details-manager")
+data class UserDetailsManagerProperties(
+    val url: String,
+    val connectTimeout: Duration,
+    val readTimeout: Duration,
+)
+
+@ConfigurationProperties(prefix = "email-sender")
+data class EmailSenderProperties(
     val url: String,
     val connectTimeout: Duration,
     val readTimeout: Duration,

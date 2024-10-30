@@ -14,7 +14,7 @@ data class ActivitiesResponse(
 
 data class ActivityGroupDTO(
     val currency: String,
-    val activities: List<ActivityDTO>
+    val activities: List<ActivityDTO>,
 )
 
 data class ActivityDTO(
@@ -29,21 +29,21 @@ data class ActivityDTO(
 )
 
 fun ActivitiesResponse.toDomain() =
-        groupActivities.map { activity ->
-            GroupActivities(
-                    groupId = groupId,
-                    activities = activity.activities.map { 
-                        Activity(
-                                id = it.id,
-                                type = it.type,
-                                creatorId = it.creatorId,
-                                title = it.title,
-                                value = it.value,
-                                status = it.status,
-                                participantIds = it.participantIds,
-                                date = it.date
-                        )
-                    },
-                    currency = activity.currency
-            )
-        }
+    groupActivities.map { activity ->
+        GroupActivities(
+            groupId = groupId,
+            activities = activity.activities.map {
+                Activity(
+                    id = it.id,
+                    type = it.type,
+                    creatorId = it.creatorId,
+                    title = it.title,
+                    value = it.value,
+                    status = it.status,
+                    participantIds = it.participantIds,
+                    date = it.date,
+                )
+            },
+            currency = activity.currency,
+        )
+    }
