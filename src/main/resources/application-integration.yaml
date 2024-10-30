@@ -47,6 +47,6 @@ report-job-producer:
 report-job-processor:
   enabled: true
   lockTime: 10s
-  emptyCandidateDelay: 10s
+  emptyCandidateDelay: 1s
   retryDelays:
     - 0s
