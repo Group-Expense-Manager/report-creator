@@ -4,21 +4,18 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import org.springframework.boot.test.mock.mockito.SpyBean
 import pl.edu.agh.gem.config.ReportJobProcessorProperties
 import pl.edu.agh.gem.integration.BaseIntegrationSpec
 import pl.edu.agh.gem.internal.persistence.MissingReportJobException
 import pl.edu.agh.gem.internal.persistence.ReportJobRepository
 import pl.edu.agh.gem.util.createReportJob
-import java.time.Clock
 
 class ReportJobRepositoryIT(
-    @SpyBean private val clock: Clock,
     private val reportJobRepository: ReportJobRepository,
     private val reportJobProcessorProperties: ReportJobProcessorProperties,
 ) : BaseIntegrationSpec({
 
-    should("save and report rate job by id") {
+    should("save and report job by id") {
         // given
         val reportJob = createReportJob()
 
@@ -38,31 +35,31 @@ class ReportJobRepositoryIT(
 
     should("find and lock job to process") {
         // given
-        val exchangeRateJob = createReportJob(
+        val reportJob = createReportJob(
             nextProcessAt = FIXED_TIME,
         )
-        reportJobRepository.save(exchangeRateJob)
+        reportJobRepository.save(reportJob)
 
         // when
         reportJobRepository.findJobToProcessAndLock()
-        val jobToProcess = reportJobRepository.findById(exchangeRateJob.id)
+        val jobToProcess = reportJobRepository.findById(reportJob.id)
 
         // then
         jobToProcess.shouldNotBeNull()
-        jobToProcess.id shouldBe exchangeRateJob.id
+        jobToProcess.id shouldBe reportJob.id
         jobToProcess.nextProcessAt shouldBe FIXED_TIME.plus(reportJobProcessorProperties.lockTime)
     }
 
     should("update nextProcessAt and retry count") {
         // given
-        val exchangeRateJob = createReportJob(
+        val reportJob = createReportJob(
             nextProcessAt = FIXED_TIME,
             retry = 0L,
         )
-        reportJobRepository.save(exchangeRateJob)
+        reportJobRepository.save(reportJob)
 
         // when
-        val updatedJob = reportJobRepository.updateNextProcessAtAndRetry(exchangeRateJob)
+        val updatedJob = reportJobRepository.updateNextProcessAtAndRetry(reportJob)
 
         // then
         updatedJob.shouldNotBeNull()
@@ -72,14 +69,14 @@ class ReportJobRepositoryIT(
 
     should("remove report job") {
         // given
-        val exchangeRateJob = createReportJob()
-        reportJobRepository.save(exchangeRateJob)
+        val reportJob = createReportJob()
+        reportJobRepository.save(reportJob)
 
         // when
-        reportJobRepository.remove(exchangeRateJob)
+        reportJobRepository.remove(reportJob)
 
         // then
-        val foundJob = reportJobRepository.findById(exchangeRateJob.id)
+        val foundJob = reportJobRepository.findById(reportJob.id)
         foundJob.shouldBeNull()
     }
 
@@ -106,10 +103,10 @@ class ReportJobRepositoryIT(
 
     should("return null when no job to process is found") {
         // given
-        val exchangeRateJob = createReportJob(
+        val reportJob = createReportJob(
             nextProcessAt = FIXED_TIME.plusSeconds(3600),
         )
-        reportJobRepository.save(exchangeRateJob)
+        reportJobRepository.save(reportJob)
 
         // when
         val jobToProcess = reportJobRepository.findJobToProcessAndLock()

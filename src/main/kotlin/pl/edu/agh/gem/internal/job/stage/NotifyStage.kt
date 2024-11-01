@@ -18,7 +18,13 @@ class NotifyStage(
             if (reportJob.attachmentId == null) {
                 nextStage(reportJob, UPLOAD_REPORT)
             } else {
-                emailSenderClient.notifyAboutReport(reportJob.id, reportJob.title, reportJob.creatorId, reportJob.attachmentId)
+                emailSenderClient.notifyAboutReport(
+                    reportId = reportJob.id,
+                    title = reportJob.title,
+                    creatorId = reportJob.creatorId,
+                    attachmentId = reportJob.attachmentId,
+                    groupId = reportJob.groupId,
+                )
                 success()
             }
         } catch (e: RetryableEmailSenderClientException) {

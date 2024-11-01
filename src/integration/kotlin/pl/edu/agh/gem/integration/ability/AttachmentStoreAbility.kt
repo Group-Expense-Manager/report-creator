@@ -1,27 +1,34 @@
 package pl.edu.agh.gem.integration.ability
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.OK
 import pl.edu.agh.gem.headers.HeadersTestUtils.withAppContentType
+import pl.edu.agh.gem.integration.BaseIntegrationSpec.Companion.objectMappper
 import pl.edu.agh.gem.integration.environment.ProjectConfig.wiremock
 import pl.edu.agh.gem.paths.Paths.INTERNAL
 
-private fun createDefaultAttachmentUrl(groupId: String) = "$INTERNAL/groups/$groupId"
+private fun uploadGroupAttachmentUrl(groupId: String) = "$INTERNAL/groups/$groupId"
 
-fun stubPostReportUrl(body: Any?, groupId: String, statusCode: HttpStatus = OK) {
+fun stubPostReportUrl(body: Any? = null, groupId: String, statusCode: HttpStatus = OK) {
     wiremock.stubFor(
-        post(urlMatching(createDefaultAttachmentUrl(groupId)))
+        post(urlMatching(uploadGroupAttachmentUrl(groupId)))
             .willReturn(
                 aResponse()
                     .withStatus(statusCode.value())
                     .withAppContentType()
                     .withBody(
-                        jacksonObjectMapper().writeValueAsString(body),
+                        objectMappper.writeValueAsString(body),
                     ),
             ),
+    )
+}
+
+fun verifyPostReportUrl(groupId: String) {
+    wiremock.verify(
+        postRequestedFor(urlMatching(uploadGroupAttachmentUrl(groupId))),
     )
 }

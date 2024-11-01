@@ -21,6 +21,7 @@ import pl.edu.agh.gem.internal.client.AttachmentStoreClientException
 import pl.edu.agh.gem.internal.client.RetryableAttachmentStoreClientException
 import pl.edu.agh.gem.internal.model.finance.Attachment
 import pl.edu.agh.gem.paths.Paths.INTERNAL
+import java.io.IOException
 
 @Component
 class RestAttachmentStoreClient(
@@ -39,19 +40,26 @@ class RestAttachmentStoreClient(
                 POST,
                 HttpEntity(file, HttpHeaders().withAppAcceptType()),
                 AttachmentResponse::class.java,
-            ).body?.toDomain() ?: throw AttachmentStoreClientException("While trying to upload attachment we receive empty body")
-        } catch (ex: HttpClientErrorException) {
-            logger.warn(ex) { "Client side exception while trying to upload attachment" }
-            throw AttachmentStoreClientException(ex.message)
-        } catch (ex: HttpServerErrorException) {
-            logger.warn(ex) { "Server side exception while trying to upload attachment" }
-            throw RetryableAttachmentStoreClientException(ex.message)
-        } catch (ex: ResourceAccessException) {
-            logger.warn(ex) { "Resource access exception while trying to upload attachment" }
-            throw RetryableAttachmentStoreClientException(ex.message)
+            ).body?.toDomain() ?: throw AttachmentStoreClientException("While trying to upload attachment, we received an empty body")
         } catch (ex: Exception) {
-            logger.warn(ex) { "Unexpected exception while trying to upload attachment" }
-            throw AttachmentStoreClientException(ex.message)
+            handleAttachmentStoreException(ex, "upload attachment")
+        }
+    }
+
+    private fun <T> handleAttachmentStoreException(ex: Exception, action: String): T {
+        when (ex) {
+            is HttpClientErrorException -> {
+                logger.warn(ex) { "Client-side exception while trying to $action" }
+                throw AttachmentStoreClientException(ex.message)
+            }
+            is HttpServerErrorException, is ResourceAccessException, is IOException -> {
+                logger.warn(ex) { "Retryable exception while trying to $action" }
+                throw RetryableAttachmentStoreClientException(ex.message)
+            }
+            else -> {
+                logger.warn(ex) { "Unexpected exception while trying to $action" }
+                throw AttachmentStoreClientException(ex.message)
+            }
         }
     }
 

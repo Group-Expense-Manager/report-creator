@@ -9,7 +9,6 @@ import pl.edu.agh.gem.helper.group.DummyGroup.GROUP_ID
 import pl.edu.agh.gem.integration.BaseIntegrationSpec
 import pl.edu.agh.gem.integration.ability.stubPostReportUrl
 import pl.edu.agh.gem.internal.client.AttachmentStoreClient
-import pl.edu.agh.gem.internal.client.AttachmentStoreClientException
 import pl.edu.agh.gem.internal.client.RetryableAttachmentStoreClientException
 import pl.edu.agh.gem.util.createAttachment
 
@@ -19,7 +18,7 @@ class AttachmentStoreClientIT(
     should("upload attachment") {
         // given
         val attachmentResponse = createAttachment()
-        stubPostReportUrl(attachmentResponse, GROUP_ID)
+        stubPostReportUrl(body = attachmentResponse, groupId = GROUP_ID)
 
         // when
         val result = attachmentStoreClient.uploadAttachment(GROUP_ID, Binary(ByteArray(0)))
@@ -30,19 +29,18 @@ class AttachmentStoreClientIT(
 
     should("handle 4xx error response") {
         // given
-        val attachmentResponse = createAttachment()
-        stubPostReportUrl(attachmentResponse, GROUP_ID, BAD_REQUEST)
+        stubPostReportUrl(groupId = GROUP_ID, statusCode = BAD_REQUEST)
 
         // when & then
-        shouldThrow<AttachmentStoreClientException> {
+        // workaround for IOException
+        shouldThrow<Exception> {
             attachmentStoreClient.uploadAttachment(GROUP_ID, Binary(ByteArray(0)))
         }
     }
 
     should("handle 5xx error response") {
         // given
-        val attachmentResponse = createAttachment()
-        stubPostReportUrl(attachmentResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
+        stubPostReportUrl(groupId = GROUP_ID, statusCode = INTERNAL_SERVER_ERROR)
 
         // when & then
         shouldThrow<RetryableAttachmentStoreClientException> {

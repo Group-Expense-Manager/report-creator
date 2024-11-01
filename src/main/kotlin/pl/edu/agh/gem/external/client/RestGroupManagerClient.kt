@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod.GET
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
 import pl.edu.agh.gem.config.GroupManagerProperties
 import pl.edu.agh.gem.external.dto.group.GroupResponse
@@ -22,6 +23,7 @@ import pl.edu.agh.gem.internal.client.RetryableGroupManagerClientException
 import pl.edu.agh.gem.internal.model.group.Group
 import pl.edu.agh.gem.internal.model.group.GroupDetails
 import pl.edu.agh.gem.paths.Paths.INTERNAL
+import java.io.IOException
 
 @Component
 class RestGroupManagerClient(
@@ -37,16 +39,9 @@ class RestGroupManagerClient(
                 GET,
                 HttpEntity<Any>(HttpHeaders().withAppAcceptType()),
                 UserGroupsResponse::class.java,
-            ).body?.toDomain() ?: throw GroupManagerClientException("While trying to retrieve user groups we receive empty body")
-        } catch (ex: HttpClientErrorException) {
-            logger.warn(ex) { "Client side exception while trying to retrieve user groups" }
-            throw GroupManagerClientException(ex.message)
-        } catch (ex: HttpServerErrorException) {
-            logger.warn(ex) { "Server side exception while trying to retrieve user groups" }
-            throw RetryableGroupManagerClientException(ex.message)
+            ).body?.toDomain() ?: throw GroupManagerClientException("While trying to retrieve user groups, received an empty body")
         } catch (ex: Exception) {
-            logger.warn(ex) { "Unexpected exception while trying to retrieve user groups" }
-            throw GroupManagerClientException(ex.message)
+            handleGroupManagerException(ex, "retrieve user groups")
         }
     }
 
@@ -58,18 +53,26 @@ class RestGroupManagerClient(
                 GET,
                 HttpEntity<Any>(HttpHeaders().withAppAcceptType().withAppContentType()),
                 GroupResponse::class.java,
-            ).body?.toDomain() ?: throw GroupManagerClientException(
-                "While retrieving group using GroupManagerClient we receive empty body",
-            )
-        } catch (ex: HttpClientErrorException) {
-            logger.warn(ex) { "Client side exception while trying to get group: $groupId" }
-            throw GroupManagerClientException(ex.message)
-        } catch (ex: HttpServerErrorException) {
-            logger.warn(ex) { "Server side exception while trying to get group: $groupId" }
-            throw RetryableGroupManagerClientException(ex.message)
+            ).body?.toDomain() ?: throw GroupManagerClientException("While retrieving group, received an empty body")
         } catch (ex: Exception) {
-            logger.warn(ex) { "Unexpected exception while trying to get group: $groupId" }
-            throw GroupManagerClientException(ex.message)
+            handleGroupManagerException(ex, "get group: $groupId")
+        }
+    }
+
+    private fun <T> handleGroupManagerException(ex: Exception, action: String): T {
+        when (ex) {
+            is HttpClientErrorException -> {
+                logger.warn(ex) { "Client-side exception while trying to $action" }
+                throw GroupManagerClientException(ex.message)
+            }
+            is HttpServerErrorException, is ResourceAccessException, is IOException -> {
+                logger.warn(ex) { "Retryable exception while trying to $action" }
+                throw RetryableGroupManagerClientException(ex.message)
+            }
+            else -> {
+                logger.warn(ex) { "Unexpected exception while trying to $action" }
+                throw GroupManagerClientException(ex.message)
+            }
         }
     }
 

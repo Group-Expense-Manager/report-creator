@@ -32,7 +32,7 @@ class GroupManagerClientIT(
         val members = createMembersDto(USER_ID, OTHER_USER_ID)
         val listOfCurrencies = createCurrenciesDto("PLN", "USD", "EUR")
         val groupResponse = createGroupResponse(members = members, groupCurrencies = listOfCurrencies)
-        stubGroupManagerGroupDetails(groupResponse, GROUP_ID)
+        stubGroupManagerGroupDetails(body = groupResponse, groupId = GROUP_ID)
 
         // when
         val result = groupManagerClient.getGroupDetails(GROUP_ID)
@@ -47,8 +47,7 @@ class GroupManagerClientIT(
 
     should("throw GroupManagerClientException when we send bad request") {
         // given
-        val groupResponse = createGroupResponse()
-        stubGroupManagerGroupDetails(groupResponse, GROUP_ID, NOT_ACCEPTABLE)
+        stubGroupManagerGroupDetails(groupId = GROUP_ID, statusCode = NOT_ACCEPTABLE)
 
         // when & then
         shouldThrow<GroupManagerClientException> {
@@ -58,8 +57,7 @@ class GroupManagerClientIT(
 
     should("throw RetryableCurrencyManagerClientException when client has internal error") {
         // given
-        val groupResponse = createGroupResponse()
-        stubGroupManagerGroupDetails(groupResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
+        stubGroupManagerGroupDetails(groupId = GROUP_ID, statusCode = INTERNAL_SERVER_ERROR)
 
         // when & then
         shouldThrow<RetryableGroupManagerClientException> {
@@ -71,7 +69,7 @@ class GroupManagerClientIT(
         // given
         val userGroups = listOf(GroupDTO(GROUP_ID), GroupDTO(OTHER_GROUP_ID))
         val userGroupsResponse = createUserGroupsResponse(userGroups)
-        stubGroupManagerUserGroups(userGroupsResponse, USER_ID)
+        stubGroupManagerUserGroups(body = userGroupsResponse, userId = USER_ID)
 
         // when
         val result = groupManagerClient.getGroups(USER_ID)
@@ -84,7 +82,7 @@ class GroupManagerClientIT(
 
     should("throw GroupManagerClientException when we send bad request") {
         // given
-        stubGroupManagerUserGroups(createUserGroupsResponse(), USER_ID, NOT_ACCEPTABLE)
+        stubGroupManagerUserGroups(userId = USER_ID, statusCode = NOT_ACCEPTABLE)
 
         // when & then
         shouldThrow<GroupManagerClientException> {
@@ -94,7 +92,7 @@ class GroupManagerClientIT(
 
     should("throw RetryableGroupManagerClientException when client has internal error") {
         // given
-        stubGroupManagerUserGroups(createUserGroupsResponse(), USER_ID, INTERNAL_SERVER_ERROR)
+        stubGroupManagerUserGroups(userId = USER_ID, statusCode = INTERNAL_SERVER_ERROR)
 
         // when & then
         shouldThrow<RetryableGroupManagerClientException> {

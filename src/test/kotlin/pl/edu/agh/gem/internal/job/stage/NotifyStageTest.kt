@@ -5,6 +5,7 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import pl.edu.agh.gem.helper.group.DummyGroup.GROUP_ID
 import pl.edu.agh.gem.internal.client.EmailSenderClient
 import pl.edu.agh.gem.internal.client.RetryableEmailSenderClientException
 import pl.edu.agh.gem.internal.job.ReportJobState.UPLOAD_REPORT
@@ -23,21 +24,21 @@ class NotifyStageTest : ShouldSpec({
         notifyStage.process(reportJob)
 
         // then
-        verify(emailSenderClient).notifyAboutReport(reportJob.id, reportJob.title, reportJob.creatorId, reportJob.attachmentId!!)
+        verify(emailSenderClient).notifyAboutReport(reportJob.id, reportJob.title, reportJob.creatorId, reportJob.attachmentId!!, GROUP_ID)
         verify(notifyStage).success()
     }
 
     should("retry on RetryableEmailSenderException") {
         // given
         val reportJob = createReportJob()
-        whenever(emailSenderClient.notifyAboutReport(reportJob.id, reportJob.title, reportJob.creatorId, reportJob.attachmentId!!))
+        whenever(emailSenderClient.notifyAboutReport(reportJob.id, reportJob.title, reportJob.creatorId, reportJob.attachmentId!!, GROUP_ID))
             .thenThrow(RetryableEmailSenderClientException::class.java)
 
         // when
         notifyStage.process(reportJob)
 
         // then
-        verify(emailSenderClient).notifyAboutReport(reportJob.id, reportJob.title, reportJob.creatorId, reportJob.attachmentId!!)
+        verify(emailSenderClient).notifyAboutReport(reportJob.id, reportJob.title, reportJob.creatorId, reportJob.attachmentId!!, GROUP_ID)
         verify(notifyStage).retry()
     }
 

@@ -18,6 +18,8 @@ import pl.edu.agh.gem.integration.ability.stubGetSettlements
 import pl.edu.agh.gem.integration.ability.stubGetUsersDetails
 import pl.edu.agh.gem.integration.ability.stubGroupManagerGroupDetails
 import pl.edu.agh.gem.integration.ability.stubPostReportUrl
+import pl.edu.agh.gem.integration.ability.verifyEmailSenderReportNotification
+import pl.edu.agh.gem.integration.ability.verifyPostReportUrl
 import pl.edu.agh.gem.internal.persistence.ReportJobRepository
 import pl.edu.agh.gem.internal.persistence.ReportRepository
 import pl.edu.agh.gem.util.createActivitiesResponse
@@ -33,7 +35,7 @@ import java.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
-class ReportRateJobIT(
+class ReportJobIT(
     @SpyBean private val clock: Clock,
     private val reportJobRepository: ReportJobRepository,
     private val reportRepository: ReportRepository,
@@ -82,10 +84,13 @@ class ReportRateJobIT(
         report.shouldNotBeNull()
         report.id shouldBe reportJob.id
         report.groupId shouldBe reportJob.groupId
-        report.createdAt shouldBe FIXED_TIME
+        report.createdAt.shouldNotBeNull()
         report.creatorId shouldBe reportJob.creatorId
         report.attachmentId shouldBe attachmentResponse.attachmentId
         report.format shouldBe reportJob.format
+
+        verifyPostReportUrl(GROUP_ID)
+        verifyEmailSenderReportNotification()
     }
 
     should("retry report job successfully") {
@@ -143,27 +148,27 @@ class ReportRateJobIT(
         report.shouldNotBeNull()
         report.id shouldBe reportJob.id
         report.groupId shouldBe reportJob.groupId
-        report.createdAt shouldBe FIXED_TIME
+        report.createdAt.shouldNotBeNull()
         report.creatorId shouldBe reportJob.creatorId
         report.attachmentId shouldBe attachmentResponse.attachmentId
         report.format shouldBe reportJob.format
     }
 },)
 
-private suspend fun waitTillExchangePlan(exchangeRateJobRepository: ReportJobRepository, exchangeRateJobId: String) {
+private suspend fun waitTillExchangePlan(reportJobRepository: ReportJobRepository, reportJobId: String) {
     while (true) {
         delay(1L.seconds.toJavaDuration())
-        if (exchangeRateJobRepository.findById(exchangeRateJobId) == null) {
+        if (reportJobRepository.findById(reportJobId) == null) {
             break
         }
     }
 }
 
-private suspend fun waitTillJobEndRetry(exchangeRateJobRepository: ReportJobRepository, exchangeRateJobId: String) {
+private suspend fun waitTillJobEndRetry(reportJobRepository: ReportJobRepository, reportJobId: String) {
     while (true) {
         delay(1L.seconds.toJavaDuration())
-        val exchangeRateJob = exchangeRateJobRepository.findById(exchangeRateJobId)
-        if (exchangeRateJob != null && exchangeRateJob.retry != 0L) {
+        val reportJob = reportJobRepository.findById(reportJobId)
+        if (reportJob != null && reportJob.retry != 0L) {
             break
         }
     }

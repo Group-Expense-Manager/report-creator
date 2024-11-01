@@ -5,7 +5,7 @@ import pl.edu.agh.gem.internal.job.ProcessingStage
 import pl.edu.agh.gem.internal.job.ReportJobState.FETCHING_GROUP_DETAILS
 import pl.edu.agh.gem.internal.job.ReportJobState.FETCHING_SETTLEMENTS
 import pl.edu.agh.gem.internal.job.ReportJobState.FETCHING_USERS_DETAILS
-import pl.edu.agh.gem.internal.job.ReportJobState.SAVING
+import pl.edu.agh.gem.internal.job.ReportJobState.UPLOAD_REPORT
 import pl.edu.agh.gem.internal.job.StageResult
 import pl.edu.agh.gem.internal.model.finance.GroupActivities
 import pl.edu.agh.gem.internal.model.finance.GroupBalances
@@ -39,7 +39,7 @@ abstract class GenerateReportStage : ProcessingStage() {
                 groupDetails = reportJob.groupDetails,
             )
 
-            nextStage(reportJob.copy(file = reportFile), SAVING)
+            nextStage(reportJob.copy(file = reportFile), UPLOAD_REPORT)
         }
     }
 }

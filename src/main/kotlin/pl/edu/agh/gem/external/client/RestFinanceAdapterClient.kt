@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod.GET
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
 import pl.edu.agh.gem.config.FinanceAdapterProperties
 import pl.edu.agh.gem.external.dto.finance.ActivitiesResponse
@@ -23,6 +24,7 @@ import pl.edu.agh.gem.internal.model.finance.GroupActivities
 import pl.edu.agh.gem.internal.model.finance.GroupBalances
 import pl.edu.agh.gem.internal.model.finance.GroupSettlements
 import pl.edu.agh.gem.paths.Paths.INTERNAL
+import java.io.IOException
 
 @Component
 class RestFinanceAdapterClient(
@@ -38,16 +40,9 @@ class RestFinanceAdapterClient(
                 GET,
                 HttpEntity<Any>(HttpHeaders().withAppAcceptType()),
                 ActivitiesResponse::class.java,
-            ).body?.toDomain() ?: throw FinanceAdapterClientException("While trying to retrieve activities we receive empty body")
-        } catch (ex: HttpClientErrorException) {
-            logger.warn(ex) { "Client side exception while trying to retrieve activities" }
-            throw FinanceAdapterClientException(ex.message)
-        } catch (ex: HttpServerErrorException) {
-            logger.warn(ex) { "Server side exception while trying to retrieve activities" }
-            throw RetryableFinanceAdapterClientException(ex.message)
+            ).body?.toDomain() ?: throw FinanceAdapterClientException("While trying to retrieve activities, received an empty body")
         } catch (ex: Exception) {
-            logger.warn(ex) { "Unexpected exception while trying to retrieve activities" }
-            throw FinanceAdapterClientException(ex.message)
+            handleException(ex, "retrieve activities")
         }
     }
 
@@ -59,16 +54,9 @@ class RestFinanceAdapterClient(
                 GET,
                 HttpEntity<Any>(HttpHeaders().withAppAcceptType()),
                 BalancesResponse::class.java,
-            ).body?.toDomain() ?: throw FinanceAdapterClientException("While trying to retrieve balances we receive empty body")
-        } catch (ex: HttpClientErrorException) {
-            logger.warn(ex) { "Client side exception while trying to retrieve balances" }
-            throw FinanceAdapterClientException(ex.message)
-        } catch (ex: HttpServerErrorException) {
-            logger.warn(ex) { "Server side exception while trying to retrieve balances" }
-            throw RetryableFinanceAdapterClientException(ex.message)
+            ).body?.toDomain() ?: throw FinanceAdapterClientException("While trying to retrieve balances, received an empty body")
         } catch (ex: Exception) {
-            logger.warn(ex) { "Unexpected exception while trying to retrieve balances" }
-            throw FinanceAdapterClientException(ex.message)
+            handleException(ex, "retrieve balances")
         }
     }
 
@@ -80,21 +68,31 @@ class RestFinanceAdapterClient(
                 GET,
                 HttpEntity<Any>(HttpHeaders().withAppAcceptType()),
                 SettlementsResponse::class.java,
-            ).body?.toDomain() ?: throw FinanceAdapterClientException("While trying to retrieve settlements we receive empty body")
-        } catch (ex: HttpClientErrorException) {
-            logger.warn(ex) { "Client side exception while trying to retrieve settlements" }
-            throw FinanceAdapterClientException(ex.message)
-        } catch (ex: HttpServerErrorException) {
-            logger.warn(ex) { "Server side exception while trying to retrieve settlements" }
-            throw RetryableFinanceAdapterClientException(ex.message)
+            ).body?.toDomain() ?: throw FinanceAdapterClientException("While trying to retrieve settlements, received an empty body")
         } catch (ex: Exception) {
-            logger.warn(ex) { "Unexpected exception while trying to retrieve settlements" }
-            throw FinanceAdapterClientException(ex.message)
+            handleException(ex, "retrieve settlements")
+        }
+    }
+
+    private fun <T> handleException(ex: Exception, action: String): T {
+        when (ex) {
+            is HttpClientErrorException -> {
+                logger.warn(ex) { "Client-side exception while trying to $action" }
+                throw FinanceAdapterClientException(ex.message)
+            }
+            is HttpServerErrorException, is ResourceAccessException, is IOException -> {
+                logger.warn(ex) { "Retryable exception while trying to $action" }
+                throw RetryableFinanceAdapterClientException(ex.message)
+            }
+            else -> {
+                logger.warn(ex) { "Unexpected exception while trying to $action" }
+                throw FinanceAdapterClientException(ex.message)
+            }
         }
     }
 
     private fun resolveActivitiesAddress(groupId: String) =
-        "${financeAdapterProperties.url}$INTERNAL/expenses/groups/$groupId"
+        "${financeAdapterProperties.url}$INTERNAL/activities/groups/$groupId"
 
     private fun resolveBalancesAddress(groupId: String) =
         "${financeAdapterProperties.url}$INTERNAL/balances/groups/$groupId"

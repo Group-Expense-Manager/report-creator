@@ -17,7 +17,7 @@ class SettlementsResponseTest : ShouldSpec({
         // then
         result.size shouldBe 1
         result.first().also {
-            val groupSettlementsDto = settlementsResponse.groupSettlements.first()
+            val groupSettlementsDto = settlementsResponse.settlements.first()
             it.currency shouldBe groupSettlementsDto.currency
             it.status shouldBe groupSettlementsDto.status
             it.settlements.size shouldBe 1

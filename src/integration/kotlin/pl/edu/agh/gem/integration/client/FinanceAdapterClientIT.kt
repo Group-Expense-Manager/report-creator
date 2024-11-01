@@ -23,7 +23,7 @@ class FinanceAdapterClientIT(
     should("retrieve activities successfully") {
         // given
         val activitiesResponse = createActivitiesResponse()
-        stubGetActivities(activitiesResponse, GROUP_ID)
+        stubGetActivities(body = activitiesResponse, groupId = GROUP_ID)
 
         // when
         val result = financeAdapterClient.getActivities(GROUP_ID)
@@ -34,7 +34,7 @@ class FinanceAdapterClientIT(
 
     should("throw FinanceAdapterClientException on client error for getActivities") {
         // given
-        stubGetActivities(null, GROUP_ID, BAD_REQUEST)
+        stubGetActivities(groupId = GROUP_ID, statusCode = BAD_REQUEST)
 
         // when & then
         shouldThrow<FinanceAdapterClientException> {
@@ -44,7 +44,7 @@ class FinanceAdapterClientIT(
 
     should("throw RetryableFinanceAdapterClientException on server error for getActivities") {
         // given
-        stubGetActivities(null, GROUP_ID, INTERNAL_SERVER_ERROR)
+        stubGetActivities(groupId = GROUP_ID, statusCode = INTERNAL_SERVER_ERROR)
 
         // when & then
         shouldThrow<RetryableFinanceAdapterClientException> {
@@ -56,7 +56,7 @@ class FinanceAdapterClientIT(
     should("retrieve balances successfully") {
         // given
         val balancesResponse = createBalancesResponse()
-        stubGetBalances(balancesResponse, GROUP_ID)
+        stubGetBalances(body = balancesResponse, groupId = GROUP_ID)
 
         // when
         val result = financeAdapterClient.getBalances(GROUP_ID)
@@ -67,7 +67,7 @@ class FinanceAdapterClientIT(
 
     should("throw FinanceAdapterClientException on client error for getBalances") {
         // given
-        stubGetBalances(null, GROUP_ID, BAD_REQUEST)
+        stubGetBalances(groupId = GROUP_ID, statusCode = BAD_REQUEST)
 
         // when & then
         shouldThrow<FinanceAdapterClientException> {
@@ -77,7 +77,7 @@ class FinanceAdapterClientIT(
 
     should("throw RetryableFinanceAdapterClientException on server error for getBalances") {
         // given
-        stubGetBalances(null, GROUP_ID, INTERNAL_SERVER_ERROR)
+        stubGetBalances(groupId = GROUP_ID, statusCode = INTERNAL_SERVER_ERROR)
 
         // when & then
         shouldThrow<RetryableFinanceAdapterClientException> {
@@ -89,7 +89,7 @@ class FinanceAdapterClientIT(
     should("retrieve settlements successfully") {
         // given
         val settlementsResponse = createSettlementsResponse()
-        stubGetSettlements(settlementsResponse, GROUP_ID)
+        stubGetSettlements(body = settlementsResponse, groupId = GROUP_ID)
 
         // when
         val result = financeAdapterClient.getSettlements(GROUP_ID)
@@ -100,7 +100,7 @@ class FinanceAdapterClientIT(
 
     should("throw FinanceAdapterClientException on client error for getSettlements") {
         // given
-        stubGetSettlements(null, GROUP_ID, BAD_REQUEST)
+        stubGetSettlements(groupId = GROUP_ID, statusCode = BAD_REQUEST)
 
         // when & then
         shouldThrow<FinanceAdapterClientException> {
@@ -110,7 +110,7 @@ class FinanceAdapterClientIT(
 
     should("throw RetryableFinanceAdapterClientException on server error for getSettlements") {
         // given
-        stubGetSettlements(null, GROUP_ID, INTERNAL_SERVER_ERROR)
+        stubGetSettlements(groupId = GROUP_ID, statusCode = INTERNAL_SERVER_ERROR)
 
         // when & then
         shouldThrow<RetryableFinanceAdapterClientException> {

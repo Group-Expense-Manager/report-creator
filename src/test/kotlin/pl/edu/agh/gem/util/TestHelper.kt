@@ -19,6 +19,7 @@ import pl.edu.agh.gem.external.dto.report.GenerateReportRequest
 import pl.edu.agh.gem.external.dto.report.ReportNotificationRequest
 import pl.edu.agh.gem.external.dto.user.GroupUsersDetailsResponse
 import pl.edu.agh.gem.external.dto.user.UserDetailsDto
+import pl.edu.agh.gem.helper.group.DummyGroup.GROUP_ID
 import pl.edu.agh.gem.helper.user.DummyUser.OTHER_USER_ID
 import pl.edu.agh.gem.helper.user.DummyUser.USER_ID
 import pl.edu.agh.gem.internal.job.ReportJobState
@@ -97,7 +98,7 @@ fun createBalancesResponse(
     )
     return BalancesResponse(
         groupId = groupId,
-        groupBalances = listOf(groupBalancesDto),
+        balances = listOf(groupBalancesDto),
     )
 }
 
@@ -121,7 +122,7 @@ fun createSettlementsResponse(
     )
     return SettlementsResponse(
         groupId = groupId,
-        groupSettlements = listOf(groupSettlementsDto),
+        settlements = listOf(groupSettlementsDto),
     )
 }
 
@@ -349,11 +350,13 @@ fun createReportNotification(
     attachmentId: String = "attachmentId",
     title: String = "title",
     userId: String = USER_ID,
+    groupId: String = GROUP_ID,
 ) = ReportNotificationRequest(
     id = id,
     title = title,
-    userId = userId,
+    creatorId = userId,
     attachmentId = attachmentId,
+    groupId = groupId,
 )
 
 fun createReport(

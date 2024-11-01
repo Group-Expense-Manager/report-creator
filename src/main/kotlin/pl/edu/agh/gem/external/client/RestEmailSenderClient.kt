@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod.POST
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
 import pl.edu.agh.gem.config.EmailSenderProperties
@@ -18,6 +19,7 @@ import pl.edu.agh.gem.internal.client.EmailSenderClient
 import pl.edu.agh.gem.internal.client.EmailSenderClientException
 import pl.edu.agh.gem.internal.client.RetryableEmailSenderClientException
 import pl.edu.agh.gem.paths.Paths.INTERNAL
+import java.io.IOException
 
 @Component
 class RestEmailSenderClient(
@@ -26,28 +28,46 @@ class RestEmailSenderClient(
 ) : EmailSenderClient {
 
     @Retry(name = "emailSender")
-    override fun notifyAboutReport(reportId: String, title: String, userId: String, attachmentId: String) {
+    override fun notifyAboutReport(
+        reportId: String,
+        title: String,
+        creatorId: String,
+        attachmentId: String,
+        groupId: String,
+    ) {
         val body = ReportNotificationRequest(
             id = reportId,
+            groupId = groupId,
             title = title,
-            userId = userId,
+            creatorId = creatorId,
             attachmentId = attachmentId,
         )
+
         try {
             restTemplate.exchange<Unit>(
                 resolveReportNotificationAddress(),
                 POST,
                 HttpEntity(body, HttpHeaders().withAppContentType()),
             )
-        } catch (ex: HttpClientErrorException) {
-            logger.warn(ex) { "Client side exception while trying to notify about report" }
-            throw EmailSenderClientException(ex.message)
-        } catch (ex: HttpServerErrorException) {
-            logger.warn(ex) { "Server side exception while trying to notify about report" }
-            throw RetryableEmailSenderClientException(ex.message)
         } catch (ex: Exception) {
-            logger.warn(ex) { "Unexpected exception while trying to notify about report" }
-            throw EmailSenderClientException(ex.message)
+            handleEmailSenderException(ex, "notify about report")
+        }
+    }
+
+    private fun <T> handleEmailSenderException(ex: Exception, action: String): T {
+        when (ex) {
+            is HttpClientErrorException -> {
+                logger.warn(ex) { "Client-side exception while trying to $action" }
+                throw EmailSenderClientException(ex.message)
+            }
+            is HttpServerErrorException, is ResourceAccessException, is IOException -> {
+                logger.warn(ex) { "Retryable exception while trying to $action" }
+                throw RetryableEmailSenderClientException(ex.message)
+            }
+            else -> {
+                logger.warn(ex) { "Unexpected exception while trying to $action" }
+                throw EmailSenderClientException(ex.message)
+            }
         }
     }
 

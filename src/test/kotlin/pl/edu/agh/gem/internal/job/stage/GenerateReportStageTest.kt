@@ -8,7 +8,7 @@ import org.mockito.kotlin.whenever
 import pl.edu.agh.gem.internal.job.ReportJobState.FETCHING_GROUP_DETAILS
 import pl.edu.agh.gem.internal.job.ReportJobState.FETCHING_SETTLEMENTS
 import pl.edu.agh.gem.internal.job.ReportJobState.FETCHING_USERS_DETAILS
-import pl.edu.agh.gem.internal.job.ReportJobState.SAVING
+import pl.edu.agh.gem.internal.job.ReportJobState.UPLOAD_REPORT
 import pl.edu.agh.gem.internal.model.finance.GroupActivities
 import pl.edu.agh.gem.internal.model.finance.GroupBalances
 import pl.edu.agh.gem.internal.model.finance.GroupSettlements
@@ -65,7 +65,7 @@ class GenerateReportStageTest : ShouldSpec({
         verify(generateReportStage).nextStage(reportJob, FETCHING_GROUP_DETAILS)
     }
 
-    should("generate report and proceed to SAVING state when all data is available") {
+    should("generate report and proceed to UPLOAD_REPORT state when all data is available") {
         // given
         val reportJob = createReportJob()
         val reportFile = Binary(ByteArray(0))
@@ -83,6 +83,6 @@ class GenerateReportStageTest : ShouldSpec({
         generateReportStage.process(reportJob)
 
         // then
-        verify(generateReportStage).nextStage(reportJob.copy(file = reportFile), SAVING)
+        verify(generateReportStage).nextStage(reportJob.copy(file = reportFile), UPLOAD_REPORT)
     }
 },)

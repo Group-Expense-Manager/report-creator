@@ -1,5 +1,7 @@
 package pl.edu.agh.gem.integration
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.core.spec.style.ShouldSpec
 import mu.KotlinLogging
 import org.springframework.boot.test.context.SpringBootTest
@@ -25,6 +27,8 @@ abstract class BaseIntegrationSpec(body: ShouldSpec.() -> Unit) : ShouldSpec(bod
             logger.info { "Injecting configuration" }
             ProjectConfig.updateConfiguration(registry)
         }
+
+        val objectMappper = jacksonObjectMapper().registerModules(JavaTimeModule())
 
         val testClock = Clock.systemUTC()
         val FIXED_TIME = Instant.parse("2021-01-01T00:00:00Z")

@@ -18,7 +18,7 @@ class UserDetailsManagerClientIT(
     should("get group users details") {
         // given
         val groupUsersDetails = createGroupUsersDetailsResponse()
-        stubGetUsersDetails(groupUsersDetails, GROUP_ID)
+        stubGetUsersDetails(body = groupUsersDetails, groupId = GROUP_ID)
 
         // when
         val result = userDetailsManagerClient.getUsersDetails(GROUP_ID)
@@ -34,8 +34,7 @@ class UserDetailsManagerClientIT(
 
     should("throw UserDetailsManagerClientException when we send bad request") {
         // given
-        val groupUsersDetails = createGroupUsersDetailsResponse()
-        stubGetUsersDetails(groupUsersDetails, GROUP_ID, BAD_REQUEST)
+        stubGetUsersDetails(groupId = GROUP_ID, statusCode = BAD_REQUEST)
 
         // when & then
         shouldThrow<UserDetailsManagerClientException> {
@@ -45,8 +44,7 @@ class UserDetailsManagerClientIT(
 
     should("throw RetryableUserDetailsManagerClientException when client has internal error") {
         // given
-        val groupUsersDetails = createGroupUsersDetailsResponse()
-        stubGetUsersDetails(groupUsersDetails, GROUP_ID, INTERNAL_SERVER_ERROR)
+        stubGetUsersDetails(groupId = GROUP_ID, statusCode = INTERNAL_SERVER_ERROR)
 
         // when & then
         shouldThrow<RetryableUserDetailsManagerClientException> {

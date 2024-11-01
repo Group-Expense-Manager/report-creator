@@ -17,7 +17,7 @@ class BalancesResponseTest : ShouldSpec({
         // then
         result.size shouldBe 1
         result.first().also {
-            val groupBalancesDto = balancesResponse.groupBalances.first()
+            val groupBalancesDto = balancesResponse.balances.first()
             it.currency shouldBe groupBalancesDto.currency
             it.balances.size shouldBe 2
             it.balances.find { it.userId == groupBalancesDto.userBalances.first().userId }.also { balance ->

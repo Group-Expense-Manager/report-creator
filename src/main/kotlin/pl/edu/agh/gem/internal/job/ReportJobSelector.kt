@@ -8,6 +8,7 @@ import pl.edu.agh.gem.internal.job.ReportJobState.FETCHING_SETTLEMENTS
 import pl.edu.agh.gem.internal.job.ReportJobState.FETCHING_USERS_DETAILS
 import pl.edu.agh.gem.internal.job.ReportJobState.FORMAT_SELECTION
 import pl.edu.agh.gem.internal.job.ReportJobState.GENERATING_XLSX_REPORT
+import pl.edu.agh.gem.internal.job.ReportJobState.NOTIFY
 import pl.edu.agh.gem.internal.job.ReportJobState.SAVING
 import pl.edu.agh.gem.internal.job.ReportJobState.STARTING
 import pl.edu.agh.gem.internal.job.ReportJobState.UPLOAD_REPORT
@@ -19,6 +20,7 @@ import pl.edu.agh.gem.internal.job.stage.FetchSettlementsStage
 import pl.edu.agh.gem.internal.job.stage.FetchUsersDetailsStage
 import pl.edu.agh.gem.internal.job.stage.FormatSelectionStage
 import pl.edu.agh.gem.internal.job.stage.GenerateXLSXReportStage
+import pl.edu.agh.gem.internal.job.stage.NotifyStage
 import pl.edu.agh.gem.internal.job.stage.SavingStage
 import pl.edu.agh.gem.internal.job.stage.StartingStage
 import pl.edu.agh.gem.internal.job.stage.UploadReportStage
@@ -35,7 +37,7 @@ class ReportJobSelector(
     private val generateXLSXReportStage: GenerateXLSXReportStage,
     private val uploadReportStage: UploadReportStage,
     private val savingStage: SavingStage,
-
+    private val notifyStage: NotifyStage,
     private val errorStage: ErrorStage,
 ) {
     fun select(state: ReportJobState): ProcessingStage {
@@ -50,6 +52,7 @@ class ReportJobSelector(
             GENERATING_XLSX_REPORT -> generateXLSXReportStage
             UPLOAD_REPORT -> uploadReportStage
             SAVING -> savingStage
+            NOTIFY -> notifyStage
             else -> errorStage
         }
     }

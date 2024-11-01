@@ -93,7 +93,7 @@ class GenerateXLSXReportStage : GenerateReportStage() {
                 var columnIndex = 0
                 row.createCell(columnIndex++, STRING).setCellValue(usersDetails.getUserName(user.userId))
                 row.createCell(columnIndex++, NUMERIC).setCellValue(user.value.toDouble())
-                row.createCell(columnIndex++, STRING).setCellValue(balance.currency)
+                row.createCell(columnIndex, STRING).setCellValue(balance.currency)
             }
         }
     }
@@ -113,7 +113,7 @@ class GenerateXLSXReportStage : GenerateReportStage() {
                 row.createCell(columnIndex++, STRING).setCellValue(usersDetails.getUserName(settlement.fromUserId))
                 row.createCell(columnIndex++, STRING).setCellValue(usersDetails.getUserName(settlement.toUserId))
                 row.createCell(columnIndex++, NUMERIC).setCellValue(settlement.value.toDouble())
-                row.createCell(columnIndex++, STRING).setCellValue(groupSettlement.currency)
+                row.createCell(columnIndex, STRING).setCellValue(groupSettlement.currency)
             }
         }
     }
@@ -136,7 +136,7 @@ class GenerateXLSXReportStage : GenerateReportStage() {
                 row.createCell(columnIndex++, STRING).setCellValue(activity.participantIds.joinToString(" ") { usersDetails.getUserName(it) })
                 row.createCell(columnIndex++, NUMERIC).setCellValue(activity.value.toDouble())
                 row.createCell(columnIndex++, STRING).setCellValue(groupActivity.currency)
-                row.createCell(columnIndex++, STRING).setCellValue(activity.status.toString())
+                row.createCell(columnIndex, STRING).setCellValue(activity.status.toString())
             }
         }
     }
