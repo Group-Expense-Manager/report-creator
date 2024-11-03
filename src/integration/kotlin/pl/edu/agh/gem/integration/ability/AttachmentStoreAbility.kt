@@ -11,11 +11,11 @@ import pl.edu.agh.gem.integration.BaseIntegrationSpec.Companion.objectMappper
 import pl.edu.agh.gem.integration.environment.ProjectConfig.wiremock
 import pl.edu.agh.gem.paths.Paths.INTERNAL
 
-private fun uploadGroupAttachmentUrl(groupId: String) = "$INTERNAL/groups/$groupId"
+private fun uploadGroupAttachmentUrl(groupId: String, userId: String) = "$INTERNAL/groups/$groupId?userId=$userId"
 
-fun stubPostReportUrl(body: Any? = null, groupId: String, statusCode: HttpStatus = OK) {
+fun stubPostReportUrl(body: Any? = null, groupId: String, userId: String, statusCode: HttpStatus = OK) {
     wiremock.stubFor(
-        post(urlMatching(uploadGroupAttachmentUrl(groupId)))
+        post(urlMatching(uploadGroupAttachmentUrl(groupId, userId)))
             .willReturn(
                 aResponse()
                     .withStatus(statusCode.value())
@@ -27,8 +27,8 @@ fun stubPostReportUrl(body: Any? = null, groupId: String, statusCode: HttpStatus
     )
 }
 
-fun verifyPostReportUrl(groupId: String) {
+fun verifyPostReportUrl(groupId: String, userId: String) {
     wiremock.verify(
-        postRequestedFor(urlMatching(uploadGroupAttachmentUrl(groupId))),
+        postRequestedFor(urlMatching(uploadGroupAttachmentUrl(groupId, userId))),
     )
 }

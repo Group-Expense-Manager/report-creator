@@ -29,14 +29,14 @@ class RestAttachmentStoreClient(
     val attachmentStoreProperties: AttachmentStoreProperties,
 ) : AttachmentStoreClient {
 
-    private fun resolveUploadAttachmentAddress(groupId: String) =
-        "${attachmentStoreProperties.url}$INTERNAL/groups/$groupId"
+    private fun resolveUploadAttachmentAddress(groupId: String, userId: String) =
+        "${attachmentStoreProperties.url}$INTERNAL/groups/$groupId?userId=$userId"
 
     @Retry(name = "attachmentStore")
-    override fun uploadAttachment(groupId: String, file: Binary): Attachment {
+    override fun uploadAttachment(groupId: String, userId: String, file: Binary): Attachment {
         return try {
             restTemplate.exchange(
-                resolveUploadAttachmentAddress(groupId),
+                resolveUploadAttachmentAddress(groupId, userId),
                 POST,
                 HttpEntity(file, HttpHeaders().withAppAcceptType()),
                 AttachmentResponse::class.java,

@@ -21,6 +21,7 @@ class UploadReportStage(
                 val attachment = attachmentStoreClient.uploadAttachment(
                     groupId = reportJob.groupId,
                     file = reportJob.file,
+                    userId = reportJob.creatorId,
                 )
                 nextStage(reportJob.copy(attachmentId = attachment.attachmentId), SAVING)
             }

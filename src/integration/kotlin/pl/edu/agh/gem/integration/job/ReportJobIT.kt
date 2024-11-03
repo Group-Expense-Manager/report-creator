@@ -47,7 +47,7 @@ class ReportJobIT(
         whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
 
         val attachmentResponse = createAttachment()
-        stubPostReportUrl(attachmentResponse, GROUP_ID)
+        stubPostReportUrl(attachmentResponse, GROUP_ID, USER_ID)
         stubEmailSenderReportNotification()
         val activitiesResponse = createActivitiesResponse()
         stubGetActivities(activitiesResponse, GROUP_ID)
@@ -89,7 +89,7 @@ class ReportJobIT(
         report.attachmentId shouldBe attachmentResponse.attachmentId
         report.format shouldBe reportJob.format
 
-        verifyPostReportUrl(GROUP_ID)
+        verifyPostReportUrl(GROUP_ID, USER_ID)
         verifyEmailSenderReportNotification()
     }
 
@@ -98,7 +98,7 @@ class ReportJobIT(
         val startedTime = testClock.instant()
         whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
         val attachmentResponse = createAttachment()
-        stubPostReportUrl(attachmentResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
+        stubPostReportUrl(attachmentResponse, GROUP_ID, USER_ID, INTERNAL_SERVER_ERROR)
         stubEmailSenderReportNotification(INTERNAL_SERVER_ERROR)
         val activitiesResponse = createActivitiesResponse()
         stubGetActivities(activitiesResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
@@ -134,7 +134,7 @@ class ReportJobIT(
         reportRepository.getReport(reportJob.id).shouldBeNull()
 
         // when
-        stubPostReportUrl(attachmentResponse, GROUP_ID)
+        stubPostReportUrl(attachmentResponse, GROUP_ID, USER_ID)
         stubEmailSenderReportNotification()
         stubGetActivities(activitiesResponse, GROUP_ID)
         stubGetBalances(balancesResponse, GROUP_ID)
