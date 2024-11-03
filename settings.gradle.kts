@@ -116,7 +116,7 @@ dependencyResolutionManagement {
             library("detekt-rules-libraries", "io.gitlab.arturbosch.detekt", "detekt-rules-libraries").version("1.23.6")
             library("detekt-rules-ruleauthors", "io.gitlab.arturbosch.detekt", "detekt-rules-ruleauthors").version("1.23.6")
             library("detekt-compiler-wrapper", "com.braisgabin.detekt", "kotlin-compiler-wrapper").version("0.0.4")
-            library("detekt-faire", "com.github.Faire", "faire-detekt-rules").version("0.2.4")
+            library("detekt-faire", "com.faire", "faire-detekt-rules").version("0.3.0")
             library("detekt-hbmartin", "com.github.hbmartin", "hbmartin-detekt-rules").version("0.1.4")
             library("kure-potlin", "pl.setblack", "kure-potlin").version("0.7.0")
         }
