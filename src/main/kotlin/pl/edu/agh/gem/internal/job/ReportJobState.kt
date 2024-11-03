@@ -1,0 +1,16 @@
+package pl.edu.agh.gem.internal.job
+
+enum class ReportJobState {
+    STARTING,
+    FETCHING_ACTIVITIES,
+    FETCHING_BALANCES,
+    FETCHING_SETTLEMENTS,
+    FETCHING_USERS_DETAILS,
+    FETCHING_GROUP_DETAILS,
+    FORMAT_SELECTION,
+    GENERATING_XLSX_REPORT,
+    UPLOAD_REPORT,
+    SAVING,
+    NOTIFY,
+    ERROR,
+}

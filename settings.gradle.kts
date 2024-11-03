@@ -33,7 +33,12 @@ dependencyResolutionManagement {
 
             library("guava", "com.google.guava:guava:33.1.0-jre")
             library("kotlinlogging", "io.github.microutils:kotlin-logging:3.0.5")
+            library("kotlinx-coroutines", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
             library("lib-gem", "pl.edu.agh.gem:lib-gem:0.3.1")
+
+            version("poi", "5.3.0")
+            library("poi-ooxml", "org.apache.poi", "poi-ooxml").versionRef("poi")
+            library("poi", "org.apache.poi", "poi").versionRef("poi")
 
             version("resilience4j", "2.2.0")
             library("resilience4j-kotlin", "io.github.resilience4j", "resilience4j-kotlin").versionRef("resilience4j")
@@ -46,6 +51,13 @@ dependencyResolutionManagement {
                     "resilience4j-kotlin",
                     "resilience4j-retry",
                     "resilience4j-spring",
+                ),
+            )
+            bundle(
+                "poi",
+                listOf(
+                    "poi",
+                    "poi-ooxml",
                 ),
             )
         }
@@ -104,7 +116,7 @@ dependencyResolutionManagement {
             library("detekt-rules-libraries", "io.gitlab.arturbosch.detekt", "detekt-rules-libraries").version("1.23.6")
             library("detekt-rules-ruleauthors", "io.gitlab.arturbosch.detekt", "detekt-rules-ruleauthors").version("1.23.6")
             library("detekt-compiler-wrapper", "com.braisgabin.detekt", "kotlin-compiler-wrapper").version("0.0.4")
-            library("detekt-faire", "com.github.Faire", "faire-detekt-rules").version("0.1.1")
+            library("detekt-faire", "com.faire", "faire-detekt-rules").version("0.3.0")
             library("detekt-hbmartin", "com.github.hbmartin", "hbmartin-detekt-rules").version("0.1.4")
             library("kure-potlin", "pl.setblack", "kure-potlin").version("0.7.0")
         }
