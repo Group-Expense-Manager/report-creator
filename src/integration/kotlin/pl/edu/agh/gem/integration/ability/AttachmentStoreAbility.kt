@@ -16,14 +16,14 @@ private fun uploadGroupAttachmentUrl(groupId: String) = "$INTERNAL/groups/$group
 
 fun stubPostReportUrl(body: Any? = null, groupId: String, userId: String, statusCode: HttpStatus = OK) {
     wiremock.stubFor(
-            post(urlPathEqualTo(uploadGroupAttachmentUrl(groupId)))
-                    .withQueryParam("userId", equalTo(userId))
-                    .willReturn(
-                            aResponse()
-                                    .withStatus(statusCode.value()) 
-                                    .withAppContentType()
-                                    .withBody(objectMappper.writeValueAsString(body))
-                    )
+        post(urlPathEqualTo(uploadGroupAttachmentUrl(groupId)))
+            .withQueryParam("userId", equalTo(userId))
+            .willReturn(
+                aResponse()
+                    .withStatus(statusCode.value())
+                    .withAppContentType()
+                    .withBody(objectMappper.writeValueAsString(body)),
+            ),
     )
 }
 
