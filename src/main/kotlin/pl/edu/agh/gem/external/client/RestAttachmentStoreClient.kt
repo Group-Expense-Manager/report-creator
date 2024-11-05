@@ -12,6 +12,7 @@ import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.util.UriComponentsBuilder
 import pl.edu.agh.gem.config.AttachmentStoreProperties
 import pl.edu.agh.gem.external.dto.attachment.AttachmentResponse
 import pl.edu.agh.gem.external.dto.attachment.toDomain
@@ -29,14 +30,18 @@ class RestAttachmentStoreClient(
     val attachmentStoreProperties: AttachmentStoreProperties,
 ) : AttachmentStoreClient {
 
-    private fun resolveUploadAttachmentAddress(groupId: String) =
-        "${attachmentStoreProperties.url}$INTERNAL/groups/$groupId"
+    private fun resolveUploadAttachmentAddress(groupId: String, userId: String): String =
+        UriComponentsBuilder.fromHttpUrl(attachmentStoreProperties.url)
+            .path("$INTERNAL/groups/{groupId}")
+            .queryParam("userId", userId)
+            .buildAndExpand(groupId)
+            .toUriString()
 
     @Retry(name = "attachmentStore")
-    override fun uploadAttachment(groupId: String, file: Binary): Attachment {
+    override fun uploadAttachment(groupId: String, userId: String, file: Binary): Attachment {
         return try {
             restTemplate.exchange(
-                resolveUploadAttachmentAddress(groupId),
+                resolveUploadAttachmentAddress(groupId, userId),
                 POST,
                 HttpEntity(file, HttpHeaders().withAppAcceptType()),
                 AttachmentResponse::class.java,

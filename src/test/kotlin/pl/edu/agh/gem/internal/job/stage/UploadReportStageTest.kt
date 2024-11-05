@@ -33,28 +33,28 @@ class UploadReportStageTest : ShouldSpec({
         // given
         val reportJob = createReportJob(file = Binary(ByteArray(0)))
         val attachment = createAttachment("attachmentId")
-        whenever(attachmentStoreClient.uploadAttachment(reportJob.groupId, reportJob.file!!))
+        whenever(attachmentStoreClient.uploadAttachment(reportJob.groupId, reportJob.creatorId, reportJob.file!!))
             .thenReturn(attachment)
 
         // when
         uploadReportStage.process(reportJob)
 
         // then
-        verify(attachmentStoreClient).uploadAttachment(reportJob.groupId, reportJob.file!!)
+        verify(attachmentStoreClient).uploadAttachment(reportJob.groupId, reportJob.creatorId, reportJob.file!!)
         verify(uploadReportStage).nextStage(reportJob.copy(attachmentId = attachment.attachmentId), SAVING)
     }
 
     should("retry on RetryableAttachmentStoreClientException") {
         // given
         val reportJob = createReportJob(file = Binary(ByteArray(0)))
-        whenever(attachmentStoreClient.uploadAttachment(reportJob.groupId, reportJob.file!!))
+        whenever(attachmentStoreClient.uploadAttachment(reportJob.groupId, reportJob.creatorId, reportJob.file!!))
             .thenThrow(RetryableAttachmentStoreClientException::class.java)
 
         // when
         uploadReportStage.process(reportJob)
 
         // then
-        verify(attachmentStoreClient).uploadAttachment(reportJob.groupId, reportJob.file!!)
+        verify(attachmentStoreClient).uploadAttachment(reportJob.groupId, reportJob.creatorId, reportJob.file!!)
         verify(uploadReportStage).retry()
     }
 },)
