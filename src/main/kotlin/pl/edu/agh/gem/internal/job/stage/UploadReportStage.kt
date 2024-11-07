@@ -23,7 +23,7 @@ class UploadReportStage(
                     file = reportJob.file,
                     userId = reportJob.creatorId,
                 )
-                nextStage(reportJob.copy(attachmentId = attachment.attachmentId), SAVING)
+                nextStage(reportJob.copy(attachmentId = attachment.id), SAVING)
             }
         } catch (e: RetryableAttachmentStoreClientException) {
             return retry()

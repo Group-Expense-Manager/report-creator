@@ -9,14 +9,14 @@ class AttachmentResponseTest : ShouldSpec({
 
     should("map correctly to Attachment") {
         // given
-        val attachmentResponse = AttachmentResponse(attachmentId = "123")
+        val attachmentResponse = AttachmentResponse(id = "123")
 
         // when
         val attachment = attachmentResponse.toDomain()
 
         // then
         attachment.also {
-            it.attachmentId shouldBe attachmentResponse.attachmentId
+            it.id shouldBe attachmentResponse.id
         }
     }
 },)

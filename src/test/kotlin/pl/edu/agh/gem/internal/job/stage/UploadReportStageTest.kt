@@ -41,7 +41,7 @@ class UploadReportStageTest : ShouldSpec({
 
         // then
         verify(attachmentStoreClient).uploadAttachment(reportJob.groupId, reportJob.creatorId, reportJob.file!!)
-        verify(uploadReportStage).nextStage(reportJob.copy(attachmentId = attachment.attachmentId), SAVING)
+        verify(uploadReportStage).nextStage(reportJob.copy(attachmentId = attachment.id), SAVING)
     }
 
     should("retry on RetryableAttachmentStoreClientException") {
