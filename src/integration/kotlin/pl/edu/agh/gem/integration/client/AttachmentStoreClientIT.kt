@@ -25,7 +25,7 @@ class AttachmentStoreClientIT(
         val result = attachmentStoreClient.uploadAttachment(GROUP_ID, USER_ID, Binary(ByteArray(0)))
 
         // then
-        result.attachmentId.shouldNotBeNull()
+        result.id.shouldNotBeNull()
     }
 
     should("handle 4xx error response") {

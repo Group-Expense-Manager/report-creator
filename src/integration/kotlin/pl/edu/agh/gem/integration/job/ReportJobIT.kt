@@ -86,7 +86,7 @@ class ReportJobIT(
         report.groupId shouldBe reportJob.groupId
         report.createdAt.shouldNotBeNull()
         report.creatorId shouldBe reportJob.creatorId
-        report.attachmentId shouldBe attachmentResponse.attachmentId
+        report.attachmentId shouldBe attachmentResponse.id
         report.format shouldBe reportJob.format
 
         verifyPostReportUrl(GROUP_ID, USER_ID)
@@ -150,7 +150,7 @@ class ReportJobIT(
         report.groupId shouldBe reportJob.groupId
         report.createdAt.shouldNotBeNull()
         report.creatorId shouldBe reportJob.creatorId
-        report.attachmentId shouldBe attachmentResponse.attachmentId
+        report.attachmentId shouldBe attachmentResponse.id
         report.format shouldBe reportJob.format
     }
 },)

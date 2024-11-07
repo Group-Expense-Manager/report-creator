@@ -330,10 +330,10 @@ fun createUsersDetails(
 }
 
 fun createAttachment(
-    attachmentId: String = "attachmentId",
+    id: String = "attachmentId",
 ): Attachment {
     return Attachment(
-        attachmentId = attachmentId,
+        id = id,
     )
 }
 
