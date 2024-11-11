@@ -68,8 +68,8 @@ resilience4j.retry:
       ignoreExceptions: [ ]
 
 attachment-store:
-  read-timeout: 1000ms
-  connect-timeout: 1000ms
+  read-timeout: 60000ms
+  connect-timeout: 60000ms
 
 finance-adapter:
   read-timeout: 1000ms
