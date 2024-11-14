@@ -43,7 +43,7 @@ class RestAttachmentStoreClient(
             restTemplate.exchange(
                 resolveUploadAttachmentAddress(groupId, userId),
                 POST,
-                HttpEntity(file, HttpHeaders().withAppAcceptType()),
+                HttpEntity(file.data, HttpHeaders().withAppAcceptType()),
                 AttachmentResponse::class.java,
             ).body?.toDomain() ?: throw AttachmentStoreClientException("While trying to upload attachment, we received an empty body")
         } catch (ex: Exception) {
