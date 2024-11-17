@@ -5,7 +5,7 @@
 
 version: 2
 registries:
-  my-github-repo:
+  gem-lib:
     type: maven-repository
     url: https://maven.pkg.github.com/Group-Expense-Manager/gem-lib
     username: ${{ secrets.GITHUB_TOKEN }}
@@ -14,8 +14,7 @@ registries:
 updates:
   - package-ecosystem: "gradle"
     directory: "/"
-    registries:
-      - allegro-artifactory
+    registries: "*"
     schedule:
       interval: "weekly"
     groups:
