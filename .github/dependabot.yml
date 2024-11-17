@@ -17,21 +17,16 @@ registries:
   gem-lib:
     type: maven-repository
     url: https://maven.pkg.github.com/Group-Expense-Manager/gem-lib
-    username: ${{ secrets.GITHUB_TOKEN }}
+    username: ${{ secrets.LIB_LOGIN }}
     password: ${{ secrets.LIB_TOKEN }}
 
 updates:
   - package-ecosystem: "gradle"
     directory: "/"
     registries: "*"
+    target-branch: "GEM-241"
     commit-message:
-      prefix: "GEM-241 | chore(deps)"
-      include: "scope"
-    pull-request-branch-name:
-      separator: "-"
-      prefix: "GEM-241-dependabot"
-      include: "updates"
-    pull-request-title: "GEM-241 | chore(deps): update dependencies"
+      prefix: "GEM-241 | "
     schedule:
       interval: "weekly"
     groups:
@@ -42,6 +37,9 @@ updates:
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "GEM-241"
+    commit-message:
+      prefix: "GEM-241 | "
     schedule:
       interval: "weekly"
     groups:
