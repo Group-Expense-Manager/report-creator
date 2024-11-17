@@ -24,6 +24,14 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/"
     registries: "*"
+    commit-message:
+      prefix: "GEM-241 | chore(deps)"
+      include: "scope"
+    pull-request-branch-name:
+      separator: "-"
+      prefix: "GEM-241-dependabot"
+      include: "updates"
+    pull-request-title: "GEM-241 | chore(deps): update dependencies"
     schedule:
       interval: "weekly"
     groups:
