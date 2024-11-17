@@ -28,7 +28,7 @@ updates:
     commit-message:
       prefix: "GEM-241 | "
     schedule:
-      interval: "weekly"
+      interval: "daily"
     groups:
       all-dependencies:
         patterns:
@@ -41,7 +41,7 @@ updates:
     commit-message:
       prefix: "GEM-241 | "
     schedule:
-      interval: "weekly"
+      interval: "daily"
     groups:
       all-dependencies:
         patterns:
