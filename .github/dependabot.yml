@@ -5,6 +5,15 @@
 
 version: 2
 registries:
+  google:
+    type: maven-repository
+    url: "https://dl.google.com/dl/android/maven2"
+  maven-central:
+    type: maven-repository
+    url: "https://repo.maven.apache.org/maven2"
+  gradle-plugin-portal:
+    type: maven-repository
+    url: "https://plugins.gradle.org/m2"
   gem-lib:
     type: maven-repository
     url: https://maven.pkg.github.com/Group-Expense-Manager/gem-lib
