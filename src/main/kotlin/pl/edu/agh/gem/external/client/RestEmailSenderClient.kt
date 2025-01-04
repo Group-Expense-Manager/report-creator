@@ -1,7 +1,7 @@
 package pl.edu.agh.gem.external.client
 
 import io.github.resilience4j.retry.annotation.Retry
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -18,10 +18,12 @@ import pl.edu.agh.gem.headers.HeadersUtils.withAppContentType
 import pl.edu.agh.gem.internal.client.EmailSenderClient
 import pl.edu.agh.gem.internal.client.EmailSenderClientException
 import pl.edu.agh.gem.internal.client.RetryableEmailSenderClientException
+import pl.edu.agh.gem.metrics.MeteredClient
 import pl.edu.agh.gem.paths.Paths.INTERNAL
 import java.io.IOException
 
 @Component
+@MeteredClient
 class RestEmailSenderClient(
     @Qualifier("EmailSenderRestTemplate") val restTemplate: RestTemplate,
     val emailSenderProperties: EmailSenderProperties,

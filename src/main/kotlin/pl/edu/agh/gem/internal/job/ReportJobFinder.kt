@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.time.delay
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import pl.edu.agh.gem.config.ReportJobProcessorProperties
 import pl.edu.agh.gem.internal.model.report.ReportJob
 import pl.edu.agh.gem.internal.persistence.ReportJobRepository
@@ -32,7 +32,7 @@ class ReportJobFinder(
         try {
             return reportJobRepository.findJobToProcessAndLock()
         } catch (e: Exception) {
-            log.error("Error while finding report job to process", e)
+            log.error(e) { "Error while finding report job to process" }
             return null
         }
     }

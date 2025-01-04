@@ -257,12 +257,12 @@ exceptions:
     ignoreLabeled: false
   SwallowedException:
     active: false
-#    ignoredExceptionTypes:
-#      - 'InterruptedException'
-#      - 'MalformedURLException'
-#      - 'NumberFormatException'
-#      - 'ParseException'
-#    allowedExceptionNameRegex: '_|(ignore|expected).*'
+  #    ignoredExceptionTypes:
+  #      - 'InterruptedException'
+  #      - 'MalformedURLException'
+  #      - 'NumberFormatException'
+  #      - 'ParseException'
+  #    allowedExceptionNameRegex: '_|(ignore|expected).*'
   ThrowingExceptionFromFinally:
     active: true
   ThrowingExceptionInMain:
@@ -284,16 +284,16 @@ exceptions:
     active: true
   TooGenericExceptionCaught:
     active: false
-#    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
-#    exceptionNames:
-#      - 'ArrayIndexOutOfBoundsException'
-#      - 'Error'
-#      - 'Exception'
-#      - 'IllegalMonitorStateException'
-#      - 'IndexOutOfBoundsException'
-#      - 'NullPointerException'
-#      - 'RuntimeException'
-#      - 'Throwable'
+    #    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
+    #    exceptionNames:
+    #      - 'ArrayIndexOutOfBoundsException'
+    #      - 'Error'
+    #      - 'Exception'
+    #      - 'IllegalMonitorStateException'
+    #      - 'IndexOutOfBoundsException'
+    #      - 'NullPointerException'
+    #      - 'RuntimeException'
+    #      - 'Throwable'
     allowedExceptionNameRegex: '_|(ignore|expected).*'
   TooGenericExceptionThrown:
     active: true

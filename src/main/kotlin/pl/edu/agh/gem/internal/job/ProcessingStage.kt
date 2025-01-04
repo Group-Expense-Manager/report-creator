@@ -1,6 +1,6 @@
 package pl.edu.agh.gem.internal.job
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import pl.edu.agh.gem.internal.model.report.ReportJob
 
 abstract class ProcessingStage {

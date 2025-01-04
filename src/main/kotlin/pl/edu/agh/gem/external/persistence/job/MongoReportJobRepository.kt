@@ -11,10 +11,12 @@ import pl.edu.agh.gem.config.ReportJobProcessorProperties
 import pl.edu.agh.gem.internal.model.report.ReportJob
 import pl.edu.agh.gem.internal.persistence.MissingReportJobException
 import pl.edu.agh.gem.internal.persistence.ReportJobRepository
+import pl.edu.agh.gem.metrics.MeteredRepository
 import java.time.Clock
 import java.time.Duration
 
 @Repository
+@MeteredRepository
 class MongoReportJobRepository(
     private val mongoOperations: MongoOperations,
     private val reportJobProcessorProperties: ReportJobProcessorProperties,

@@ -1,6 +1,6 @@
 package pl.edu.agh.gem.internal.job
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import pl.edu.agh.gem.internal.model.report.ReportJob
 import pl.edu.agh.gem.internal.persistence.ReportJobRepository

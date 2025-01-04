@@ -1,7 +1,7 @@
 package pl.edu.agh.gem.external.client
 
 import io.github.resilience4j.retry.annotation.Retry
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -22,10 +22,12 @@ import pl.edu.agh.gem.internal.client.GroupManagerClientException
 import pl.edu.agh.gem.internal.client.RetryableGroupManagerClientException
 import pl.edu.agh.gem.internal.model.group.Group
 import pl.edu.agh.gem.internal.model.group.GroupDetails
+import pl.edu.agh.gem.metrics.MeteredClient
 import pl.edu.agh.gem.paths.Paths.INTERNAL
 import java.io.IOException
 
 @Component
+@MeteredClient
 class RestGroupManagerClient(
     @Qualifier("GroupManagerRestTemplate") val restTemplate: RestTemplate,
     val groupManagerProperties: GroupManagerProperties,
