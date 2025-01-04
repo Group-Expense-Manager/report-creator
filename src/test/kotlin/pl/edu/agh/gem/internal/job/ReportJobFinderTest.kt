@@ -13,11 +13,12 @@ import pl.edu.agh.gem.util.createReportJob
 class ReportJobFinderTest : ShouldSpec({
     val reportJobRepository = mock<ReportJobRepository>()
     val reportJobProperties = mock<ReportJobProcessorProperties>()
-    val reportJobFinder = ReportJobFinder(
-        TestThreadExecutor(),
-        reportJobRepository,
-        reportJobProperties,
-    )
+    val reportJobFinder =
+        ReportJobFinder(
+            TestThreadExecutor(),
+            reportJobRepository,
+            reportJobProperties,
+        )
 
     should("emit report job") {
         // given
@@ -32,4 +33,4 @@ class ReportJobFinderTest : ShouldSpec({
             it shouldBe reportJob
         }
     }
-},)
+})

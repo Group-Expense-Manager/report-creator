@@ -138,7 +138,7 @@ tasks {
         }
         outputs.upToDateWhen { false }
     }
-    
+
     register<Test>("integration") {
         description = "Runs the integration tests."
         group = "verification"
@@ -146,7 +146,7 @@ tasks {
         classpath = sourceSets["integration"].runtimeClasspath
         mustRunAfter("test")
     }
-    
+
     check {
         dependsOn("integration")
     }

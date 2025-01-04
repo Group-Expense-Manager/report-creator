@@ -8,10 +8,12 @@ data class GenerateReportRequest(
     val title: String,
 )
 
-fun GenerateReportRequest.toDomain(groupId: String, creatorId: String) =
-    ReportCreation(
-        format = format,
-        title = title,
-        creatorId = creatorId,
-        groupId = groupId,
-    )
+fun GenerateReportRequest.toDomain(
+    groupId: String,
+    creatorId: String,
+) = ReportCreation(
+    format = format,
+    title = title,
+    creatorId = creatorId,
+    groupId = groupId,
+)

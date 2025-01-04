@@ -96,7 +96,6 @@ dependencyResolutionManagement {
                     "kotest-spring",
                     "kotest-wiremock",
                     "kotest-testcontainers",
-
                 ),
             )
 

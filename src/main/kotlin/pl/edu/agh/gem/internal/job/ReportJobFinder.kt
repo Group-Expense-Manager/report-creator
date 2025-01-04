@@ -1,12 +1,12 @@
 package pl.edu.agh.gem.internal.job
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.time.delay
-import io.github.oshai.kotlinlogging.KotlinLogging
 import pl.edu.agh.gem.config.ReportJobProcessorProperties
 import pl.edu.agh.gem.internal.model.report.ReportJob
 import pl.edu.agh.gem.internal.persistence.ReportJobRepository
@@ -17,16 +17,17 @@ class ReportJobFinder(
     private val reportJobRepository: ReportJobRepository,
     private val reportJobProcessorProperties: ReportJobProcessorProperties,
 ) {
-    fun findJobToProcess() = flow {
-        while (currentCoroutineContext().isActive) {
-            val reportJob = findReportJob()
-            reportJob?.let {
-                emit(it)
-                log.info { "Emitted report Job : $it" }
+    fun findJobToProcess() =
+        flow {
+            while (currentCoroutineContext().isActive) {
+                val reportJob = findReportJob()
+                reportJob?.let {
+                    emit(it)
+                    log.info { "Emitted report Job : $it" }
+                }
+                waitOnEmpty(reportJob)
             }
-            waitOnEmpty(reportJob)
-        }
-    }.flowOn(producerExecutor.asCoroutineDispatcher())
+        }.flowOn(producerExecutor.asCoroutineDispatcher())
 
     private fun findReportJob(): ReportJob? {
         try {

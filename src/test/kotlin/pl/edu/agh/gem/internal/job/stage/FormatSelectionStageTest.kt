@@ -21,4 +21,4 @@ class FormatSelectionStageTest : ShouldSpec({
         // then
         verify(formatSelectionStage).nextStage(reportJob, GENERATING_XLSX_REPORT)
     }
-},)
+})

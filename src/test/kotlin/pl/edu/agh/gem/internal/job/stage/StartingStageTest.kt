@@ -20,4 +20,4 @@ class StartingStageTest : ShouldSpec({
         // then
         verify(startingStage).nextStage(reportJob, FETCHING_SETTLEMENTS)
     }
-},)
+})

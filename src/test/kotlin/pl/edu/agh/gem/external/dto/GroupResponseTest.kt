@@ -24,4 +24,4 @@ class GroupResponseTest : ShouldSpec({
         result.name shouldBe groupResponse.name
         result.attachmentId shouldBe groupResponse.attachmentId
     }
-},)
+})

@@ -30,13 +30,14 @@ class GenerateXLSXReportStageTest : ShouldSpec({
         val groupDetails: GroupDetails = createGroupDetails()
 
         // when
-        val reportFile: Binary = generateXLSXReportStage.generateReport(
-            balances = balances,
-            settlements = settlements,
-            activities = activities,
-            usersDetails = usersDetails,
-            groupDetails = groupDetails,
-        )
+        val reportFile: Binary =
+            generateXLSXReportStage.generateReport(
+                balances = balances,
+                settlements = settlements,
+                activities = activities,
+                usersDetails = usersDetails,
+                groupDetails = groupDetails,
+            )
 
         // then
         verify(generateXLSXReportStage).generateReport(
@@ -56,4 +57,4 @@ class GenerateXLSXReportStageTest : ShouldSpec({
             it.getSheet("Activities - USD") shouldNotBe null
         }
     }
-},)
+})

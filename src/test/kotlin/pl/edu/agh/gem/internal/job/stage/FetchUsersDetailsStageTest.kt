@@ -42,4 +42,4 @@ class FetchUsersDetailsStageTest : ShouldSpec({
         verify(fetchUsersDetailsStage).retry()
         verify(userDetailsManagerClient).getUsersDetails(reportJob.groupId)
     }
-},)
+})

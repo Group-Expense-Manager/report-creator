@@ -43,4 +43,4 @@ class FetchActivitiesStageTest : ShouldSpec({
         verify(fetchActivitiesStage).nextStage(reportJob, FETCHING_SETTLEMENTS)
         verify(financeAdapterClient).getActivities(reportJob.groupId)
     }
-},)
+})

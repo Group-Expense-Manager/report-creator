@@ -2,8 +2,8 @@ package pl.edu.agh.gem.integration
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.kotest.core.spec.style.ShouldSpec
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.kotest.core.spec.style.ShouldSpec
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import org.springframework.test.context.ActiveProfiles

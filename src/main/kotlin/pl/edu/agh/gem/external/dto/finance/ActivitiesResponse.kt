@@ -32,18 +32,19 @@ fun ActivitiesResponse.toDomain() =
     groupActivities.map { activity ->
         GroupActivities(
             groupId = groupId,
-            activities = activity.activities.map {
-                Activity(
-                    id = it.id,
-                    type = it.type,
-                    creatorId = it.creatorId,
-                    title = it.title,
-                    value = it.value,
-                    status = it.status,
-                    participantIds = it.participantIds,
-                    date = it.date,
-                )
-            },
+            activities =
+                activity.activities.map {
+                    Activity(
+                        id = it.id,
+                        type = it.type,
+                        creatorId = it.creatorId,
+                        title = it.title,
+                        value = it.value,
+                        status = it.status,
+                        participantIds = it.participantIds,
+                        date = it.date,
+                    )
+                },
             currency = activity.currency,
         )
     }

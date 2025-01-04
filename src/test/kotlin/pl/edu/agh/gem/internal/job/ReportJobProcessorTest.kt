@@ -13,21 +13,24 @@ import pl.edu.agh.gem.util.createReportJob
 class ReportJobProcessorTest : ShouldSpec({
     val reportJobSelector = mock<ReportJobSelector>()
     val reportJobRepository = mock<ReportJobRepository>()
-    val reportJobProcessor = ReportJobProcessor(
-        reportJobSelector,
-        reportJobRepository,
-    )
+    val reportJobProcessor =
+        ReportJobProcessor(
+            reportJobSelector,
+            reportJobRepository,
+        )
 
     should("handle NextStage state transition") {
         // given
         val reportJob = createReportJob()
-        val nextStage = NextStage(
-            reportJob.copy(state = STARTING),
-            newState = STARTING,
-        )
-        val stateProcessor = mock<ProcessingStage> {
-            on { process(reportJob) } doReturn nextStage
-        }
+        val nextStage =
+            NextStage(
+                reportJob.copy(state = STARTING),
+                newState = STARTING,
+            )
+        val stateProcessor =
+            mock<ProcessingStage> {
+                on { process(reportJob) } doReturn nextStage
+            }
         whenever(reportJobSelector.select(any())).thenReturn(stateProcessor)
 
         // when
@@ -40,9 +43,10 @@ class ReportJobProcessorTest : ShouldSpec({
     should("handle StageSuccess state transition") {
         // given
         val reportJob = createReportJob()
-        val stateProcessor = mock<ProcessingStage> {
-            on { process(reportJob) } doReturn StageSuccess
-        }
+        val stateProcessor =
+            mock<ProcessingStage> {
+                on { process(reportJob) } doReturn StageSuccess
+            }
         whenever(reportJobSelector.select(any())).thenReturn(stateProcessor)
 
         // when
@@ -55,9 +59,10 @@ class ReportJobProcessorTest : ShouldSpec({
     should("handle StageFailure state transition") {
         // given
         val reportJob = createReportJob()
-        val stateProcessor = mock<ProcessingStage> {
-            on { process(reportJob) } doReturn StageFailure(Exception())
-        }
+        val stateProcessor =
+            mock<ProcessingStage> {
+                on { process(reportJob) } doReturn StageFailure(Exception())
+            }
         whenever(reportJobSelector.select(any())).thenReturn(stateProcessor)
 
         // when
@@ -70,9 +75,10 @@ class ReportJobProcessorTest : ShouldSpec({
     should("handle StageRetry state transition") {
         // given
         val reportJob = createReportJob()
-        val stateProcessor = mock<ProcessingStage> {
-            on { process(reportJob) } doReturn StageRetry
-        }
+        val stateProcessor =
+            mock<ProcessingStage> {
+                on { process(reportJob) } doReturn StageRetry
+            }
         whenever(reportJobSelector.select(any())).thenReturn(stateProcessor)
 
         // when
@@ -81,4 +87,4 @@ class ReportJobProcessorTest : ShouldSpec({
         // then
         verify(reportJobRepository).updateNextProcessAtAndRetry(reportJob)
     }
-},)
+})

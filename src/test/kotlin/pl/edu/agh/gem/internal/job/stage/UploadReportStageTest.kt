@@ -31,30 +31,32 @@ class UploadReportStageTest : ShouldSpec({
 
     should("upload attachment and proceed to SAVING state when file is not null") {
         // given
-        val reportJob = createReportJob(file = Binary(ByteArray(0)))
+        val file = Binary(ByteArray(0))
+        val reportJob = createReportJob(file = file)
         val attachment = createAttachment("attachmentId")
-        whenever(attachmentStoreClient.uploadAttachment(reportJob.groupId, reportJob.creatorId, reportJob.file!!))
+        whenever(attachmentStoreClient.uploadAttachment(reportJob.groupId, reportJob.creatorId, file))
             .thenReturn(attachment)
 
         // when
         uploadReportStage.process(reportJob)
 
         // then
-        verify(attachmentStoreClient).uploadAttachment(reportJob.groupId, reportJob.creatorId, reportJob.file!!)
+        verify(attachmentStoreClient).uploadAttachment(reportJob.groupId, reportJob.creatorId, file)
         verify(uploadReportStage).nextStage(reportJob.copy(attachmentId = attachment.id), SAVING)
     }
 
     should("retry on RetryableAttachmentStoreClientException") {
         // given
-        val reportJob = createReportJob(file = Binary(ByteArray(0)))
-        whenever(attachmentStoreClient.uploadAttachment(reportJob.groupId, reportJob.creatorId, reportJob.file!!))
+        val file = Binary(ByteArray(0))
+        val reportJob = createReportJob(file = file)
+        whenever(attachmentStoreClient.uploadAttachment(reportJob.groupId, reportJob.creatorId, file))
             .thenThrow(RetryableAttachmentStoreClientException::class.java)
 
         // when
         uploadReportStage.process(reportJob)
 
         // then
-        verify(attachmentStoreClient).uploadAttachment(reportJob.groupId, reportJob.creatorId, reportJob.file!!)
+        verify(attachmentStoreClient).uploadAttachment(reportJob.groupId, reportJob.creatorId, file)
         verify(uploadReportStage).retry()
     }
-},)
+})

@@ -25,4 +25,4 @@ class GroupUsersDetailsResponseTest : ShouldSpec({
             userDetails?.lastName shouldBe userDetailsDto.lastName
         }
     }
-},)
+})

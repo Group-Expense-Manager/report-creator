@@ -1,7 +1,7 @@
 package pl.edu.agh.gem.external.client
 
-import io.github.resilience4j.retry.annotation.Retry
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.resilience4j.retry.annotation.Retry
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -28,7 +28,6 @@ class RestEmailSenderClient(
     @Qualifier("EmailSenderRestTemplate") val restTemplate: RestTemplate,
     val emailSenderProperties: EmailSenderProperties,
 ) : EmailSenderClient {
-
     @Retry(name = "emailSender")
     override fun notifyAboutReport(
         reportId: String,
@@ -37,13 +36,14 @@ class RestEmailSenderClient(
         attachmentId: String,
         groupId: String,
     ) {
-        val body = ReportNotificationRequest(
-            id = reportId,
-            groupId = groupId,
-            title = title,
-            creatorId = creatorId,
-            attachmentId = attachmentId,
-        )
+        val body =
+            ReportNotificationRequest(
+                id = reportId,
+                groupId = groupId,
+                title = title,
+                creatorId = creatorId,
+                attachmentId = attachmentId,
+            )
 
         try {
             restTemplate.exchange<Unit>(
@@ -56,7 +56,10 @@ class RestEmailSenderClient(
         }
     }
 
-    private fun <T> handleEmailSenderException(ex: Exception, action: String): T {
+    private fun <T> handleEmailSenderException(
+        ex: Exception,
+        action: String,
+    ): T {
         when (ex) {
             is HttpClientErrorException -> {
                 logger.warn(ex) { "Client-side exception while trying to $action" }
@@ -73,8 +76,7 @@ class RestEmailSenderClient(
         }
     }
 
-    private fun resolveReportNotificationAddress() =
-        "${emailSenderProperties.url}$INTERNAL/report"
+    private fun resolveReportNotificationAddress() = "${emailSenderProperties.url}$INTERNAL/report"
 
     companion object {
         private val logger = KotlinLogging.logger {}

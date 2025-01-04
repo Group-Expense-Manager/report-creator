@@ -19,4 +19,4 @@ class AttachmentResponseTest : ShouldSpec({
             it.id shouldBe attachmentResponse.id
         }
     }
-},)
+})

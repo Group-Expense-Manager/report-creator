@@ -58,4 +58,4 @@ class FetchSettlementsStageTest : ShouldSpec({
         verify(fetchSettlementsStage).retry()
         verify(financeAdapterClient).getSettlements(reportJob.groupId)
     }
-},)
+})

@@ -4,10 +4,12 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import pl.edu.agh.gem.internal.model.report.ReportJob
 
 abstract class ProcessingStage {
-
     abstract fun process(reportJob: ReportJob): StageResult
 
-    fun nextStage(reportJob: ReportJob, nextState: ReportJobState): StageResult {
+    fun nextStage(
+        reportJob: ReportJob,
+        nextState: ReportJobState,
+    ): StageResult {
         return NextStage(reportJob, nextState)
     }
 

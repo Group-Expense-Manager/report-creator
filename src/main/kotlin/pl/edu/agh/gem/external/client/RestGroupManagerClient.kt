@@ -1,7 +1,7 @@
 package pl.edu.agh.gem.external.client
 
-import io.github.resilience4j.retry.annotation.Retry
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.resilience4j.retry.annotation.Retry
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -32,7 +32,6 @@ class RestGroupManagerClient(
     @Qualifier("GroupManagerRestTemplate") val restTemplate: RestTemplate,
     val groupManagerProperties: GroupManagerProperties,
 ) : GroupManagerClient {
-
     @Retry(name = "groupManager")
     override fun getGroups(userId: String): List<Group> {
         return try {
@@ -61,7 +60,10 @@ class RestGroupManagerClient(
         }
     }
 
-    private fun <T> handleGroupManagerException(ex: Exception, action: String): T {
+    private fun <T> handleGroupManagerException(
+        ex: Exception,
+        action: String,
+    ): T {
         when (ex) {
             is HttpClientErrorException -> {
                 logger.warn(ex) { "Client-side exception while trying to $action" }
@@ -78,11 +80,9 @@ class RestGroupManagerClient(
         }
     }
 
-    private fun resolveUserGroupsAddress(userId: String) =
-        "${groupManagerProperties.url}$INTERNAL/groups/users/$userId"
+    private fun resolveUserGroupsAddress(userId: String) = "${groupManagerProperties.url}$INTERNAL/groups/users/$userId"
 
-    private fun resolveGroupAddress(groupId: String) =
-        "${groupManagerProperties.url}$INTERNAL/groups/$groupId"
+    private fun resolveGroupAddress(groupId: String) = "${groupManagerProperties.url}$INTERNAL/groups/$groupId"
 
     companion object {
         private val logger = KotlinLogging.logger {}

@@ -30,4 +30,4 @@ class ReportServiceTest : ShouldSpec({
         // then
         verify(reportJobRepository).save(any())
     }
-},)
+})

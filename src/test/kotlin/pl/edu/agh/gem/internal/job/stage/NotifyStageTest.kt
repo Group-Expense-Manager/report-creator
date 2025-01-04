@@ -18,27 +18,29 @@ class NotifyStageTest : ShouldSpec({
 
     should("notify about report job and return success") {
         // given
-        val reportJob = createReportJob()
+        val attachmentId = "attachmentId"
+        val reportJob = createReportJob(attachmentId = attachmentId)
 
         // when
         notifyStage.process(reportJob)
 
         // then
-        verify(emailSenderClient).notifyAboutReport(reportJob.id, reportJob.title, reportJob.creatorId, reportJob.attachmentId!!, GROUP_ID)
+        verify(emailSenderClient).notifyAboutReport(reportJob.id, reportJob.title, reportJob.creatorId, attachmentId, GROUP_ID)
         verify(notifyStage).success()
     }
 
     should("retry on RetryableEmailSenderException") {
         // given
-        val reportJob = createReportJob()
-        whenever(emailSenderClient.notifyAboutReport(reportJob.id, reportJob.title, reportJob.creatorId, reportJob.attachmentId!!, GROUP_ID))
+        val attachmentId = "attachmentId"
+        val reportJob = createReportJob(attachmentId = attachmentId)
+        whenever(emailSenderClient.notifyAboutReport(reportJob.id, reportJob.title, reportJob.creatorId, attachmentId, GROUP_ID))
             .thenThrow(RetryableEmailSenderClientException::class.java)
 
         // when
         notifyStage.process(reportJob)
 
         // then
-        verify(emailSenderClient).notifyAboutReport(reportJob.id, reportJob.title, reportJob.creatorId, reportJob.attachmentId!!, GROUP_ID)
+        verify(emailSenderClient).notifyAboutReport(reportJob.id, reportJob.title, reportJob.creatorId, attachmentId, GROUP_ID)
         verify(notifyStage).retry()
     }
 
@@ -52,4 +54,4 @@ class NotifyStageTest : ShouldSpec({
         // then
         verify(notifyStage).nextStage(reportJob, UPLOAD_REPORT)
     }
-},)
+})

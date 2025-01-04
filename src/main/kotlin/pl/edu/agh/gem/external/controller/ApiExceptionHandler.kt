@@ -22,11 +22,8 @@ import pl.edu.agh.gem.internal.client.GroupManagerClientException
 @ControllerAdvice
 @Order(LOWEST_PRECEDENCE)
 class ApiExceptionHandler {
-
     @ExceptionHandler(UserWithoutGroupAccessException::class)
-    fun handleUserWithoutGroupAccessException(
-        exception: UserWithoutGroupAccessException,
-    ): ResponseEntity<SimpleErrorsHolder> {
+    fun handleUserWithoutGroupAccessException(exception: UserWithoutGroupAccessException): ResponseEntity<SimpleErrorsHolder> {
         return ResponseEntity(handleError(exception), FORBIDDEN)
     }
 
@@ -36,21 +33,20 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValidException(
-        exception: MethodArgumentNotValidException,
-    ): ResponseEntity<SimpleErrorsHolder> {
+    fun handleMethodArgumentNotValidException(exception: MethodArgumentNotValidException): ResponseEntity<SimpleErrorsHolder> {
         return ResponseEntity(handleNotValidException(exception), BAD_REQUEST)
     }
 
     private fun handleNotValidException(exception: MethodArgumentNotValidException): SimpleErrorsHolder {
-        val errors = exception.bindingResult.fieldErrors
-            .map { error ->
-                SimpleError()
-                    .withCode("VALIDATION_ERROR")
-                    .withDetails(error.field)
-                    .withUserMessage(error.defaultMessage)
-                    .withMessage(error.defaultMessage)
-            }
+        val errors =
+            exception.bindingResult.fieldErrors
+                .map { error ->
+                    SimpleError()
+                        .withCode("VALIDATION_ERROR")
+                        .withDetails(error.field)
+                        .withUserMessage(error.defaultMessage)
+                        .withMessage(error.defaultMessage)
+                }
         return SimpleErrorsHolder(errors)
     }
 }

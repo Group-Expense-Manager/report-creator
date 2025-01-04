@@ -6,7 +6,9 @@ import pl.edu.agh.gem.internal.model.finance.GroupSettlements
 
 interface FinanceAdapterClient {
     fun getActivities(groupId: String): List<GroupActivities>
+
     fun getBalances(groupId: String): List<GroupBalances>
+
     fun getSettlements(groupId: String): List<GroupSettlements>
 }
 

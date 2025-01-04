@@ -1,7 +1,7 @@
 package pl.edu.agh.gem.external.client
 
-import io.github.resilience4j.retry.annotation.Retry
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.resilience4j.retry.annotation.Retry
 import org.bson.types.Binary
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpEntity
@@ -31,8 +31,10 @@ class RestAttachmentStoreClient(
     @Qualifier("AttachmentStoreRestTemplate") val restTemplate: RestTemplate,
     val attachmentStoreProperties: AttachmentStoreProperties,
 ) : AttachmentStoreClient {
-
-    private fun resolveUploadAttachmentAddress(groupId: String, userId: String): String =
+    private fun resolveUploadAttachmentAddress(
+        groupId: String,
+        userId: String,
+    ): String =
         UriComponentsBuilder.fromUriString(attachmentStoreProperties.url)
             .path("$INTERNAL/groups/{groupId}")
             .queryParam("userId", userId)
@@ -40,7 +42,11 @@ class RestAttachmentStoreClient(
             .toUriString()
 
     @Retry(name = "attachmentStore")
-    override fun uploadAttachment(groupId: String, userId: String, file: Binary): Attachment {
+    override fun uploadAttachment(
+        groupId: String,
+        userId: String,
+        file: Binary,
+    ): Attachment {
         return try {
             restTemplate.exchange(
                 resolveUploadAttachmentAddress(groupId, userId),
@@ -53,7 +59,10 @@ class RestAttachmentStoreClient(
         }
     }
 
-    private fun <T> handleAttachmentStoreException(ex: Exception, action: String): T {
+    private fun <T> handleAttachmentStoreException(
+        ex: Exception,
+        action: String,
+    ): T {
         when (ex) {
             is HttpClientErrorException -> {
                 logger.warn(ex) { "Client-side exception while trying to $action" }

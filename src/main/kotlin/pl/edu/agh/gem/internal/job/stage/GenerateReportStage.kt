@@ -31,13 +31,14 @@ abstract class GenerateReportStage : ProcessingStage() {
         } else if (reportJob.groupDetails == null) {
             nextStage(reportJob, FETCHING_GROUP_DETAILS)
         } else {
-            val reportFile = generateReport(
-                balances = reportJob.balances,
-                settlements = reportJob.settlements,
-                activities = reportJob.activities,
-                usersDetails = reportJob.usersDetails,
-                groupDetails = reportJob.groupDetails,
-            )
+            val reportFile =
+                generateReport(
+                    balances = reportJob.balances,
+                    settlements = reportJob.settlements,
+                    activities = reportJob.activities,
+                    usersDetails = reportJob.usersDetails,
+                    groupDetails = reportJob.groupDetails,
+                )
 
             nextStage(reportJob.copy(file = reportFile), UPLOAD_REPORT)
         }

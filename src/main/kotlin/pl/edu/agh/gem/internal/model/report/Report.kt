@@ -15,11 +15,12 @@ enum class ReportFormat {
     XLSX,
 }
 
-fun ReportJob.toReport(attachmentId: String) = Report(
-    id = id,
-    groupId = groupId,
-    format = format,
-    creatorId = creatorId,
-    createdAt = nextProcessAt,
-    attachmentId = attachmentId,
-)
+fun ReportJob.toReport(attachmentId: String) =
+    Report(
+        id = id,
+        groupId = groupId,
+        format = format,
+        creatorId = creatorId,
+        createdAt = nextProcessAt,
+        attachmentId = attachmentId,
+    )

@@ -14,7 +14,12 @@ import pl.edu.agh.gem.paths.Paths.INTERNAL
 
 private fun uploadGroupAttachmentUrl(groupId: String) = "$INTERNAL/groups/$groupId"
 
-fun stubPostReportUrl(body: Any? = null, groupId: String, userId: String, statusCode: HttpStatus = OK) {
+fun stubPostReportUrl(
+    body: Any? = null,
+    groupId: String,
+    userId: String,
+    statusCode: HttpStatus = OK,
+) {
     wiremock.stubFor(
         post(urlPathEqualTo(uploadGroupAttachmentUrl(groupId)))
             .withQueryParam("userId", equalTo(userId))
@@ -27,7 +32,10 @@ fun stubPostReportUrl(body: Any? = null, groupId: String, userId: String, status
     )
 }
 
-fun verifyPostReportUrl(groupId: String, userId: String) {
+fun verifyPostReportUrl(
+    groupId: String,
+    userId: String,
+) {
     wiremock.verify(
         postRequestedFor(urlPathEqualTo(uploadGroupAttachmentUrl(groupId)))
             .withQueryParam("userId", equalTo(userId)),

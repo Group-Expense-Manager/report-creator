@@ -79,7 +79,10 @@ class GenerateXLSXReportStage : GenerateReportStage() {
             }
     }
 
-    private fun XSSFWorkbook.writeBalances(balances: List<GroupBalances>, usersDetails: UsersDetails) {
+    private fun XSSFWorkbook.writeBalances(
+        balances: List<GroupBalances>,
+        usersDetails: UsersDetails,
+    ) {
         val headers = listOf("User name", "Balance", "Currency")
 
         balances.forEach { balance ->
@@ -98,7 +101,10 @@ class GenerateXLSXReportStage : GenerateReportStage() {
         }
     }
 
-    private fun XSSFWorkbook.writeSettlements(groupSettlements: List<GroupSettlements>, usersDetails: UsersDetails) {
+    private fun XSSFWorkbook.writeSettlements(
+        groupSettlements: List<GroupSettlements>,
+        usersDetails: UsersDetails,
+    ) {
         val headers = listOf("User from", "User to", "Amount", "Currency")
 
         groupSettlements.forEach { groupSettlement ->
@@ -118,7 +124,10 @@ class GenerateXLSXReportStage : GenerateReportStage() {
         }
     }
 
-    private fun XSSFWorkbook.writeActivities(groupActivities: List<GroupActivities>, usersDetails: UsersDetails) {
+    private fun XSSFWorkbook.writeActivities(
+        groupActivities: List<GroupActivities>,
+        usersDetails: UsersDetails,
+    ) {
         val headers = listOf("Title", "Type", "Author", "Participants", "Amount", "Currency", "Status")
 
         groupActivities.forEach { groupActivity ->
