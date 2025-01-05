@@ -28,7 +28,7 @@ dependencyResolutionManagement {
             version("dependency-management", "1.1.7")
 
             library("guava", "com.google.guava:guava:33.4.0-jre")
-            library("kotlinlogging", "io.github.oshai:kotlin-logging-jvm:7.0.0")
+            library("kotlinlogging", "io.github.oshai:kotlin-logging-jvm:7.0.3")
             library("kotlinx-coroutines", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
             library("lib-gem", "pl.edu.agh.gem:lib-gem:0.5.2")
 
