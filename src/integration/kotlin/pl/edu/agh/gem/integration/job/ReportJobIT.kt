@@ -5,8 +5,8 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.time.delay
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import pl.edu.agh.gem.helper.group.DummyGroup.GROUP_ID
 import pl.edu.agh.gem.helper.user.DummyUser.OTHER_USER_ID
 import pl.edu.agh.gem.helper.user.DummyUser.USER_ID
@@ -36,126 +36,131 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 class ReportJobIT(
-    @SpyBean private val clock: Clock,
+    @MockitoSpyBean private val clock: Clock,
     private val reportJobRepository: ReportJobRepository,
     private val reportRepository: ReportRepository,
 ) : BaseIntegrationSpec({
 
-    should("process report job successfully") {
-        // given
-        val startedTime = testClock.instant()
-        whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
+        should("process report job successfully") {
+            // given
+            val startedTime = testClock.instant()
+            whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
 
-        val attachmentResponse = createAttachment()
-        stubPostReportUrl(attachmentResponse, GROUP_ID, USER_ID)
-        stubEmailSenderReportNotification()
-        val activitiesResponse = createActivitiesResponse()
-        stubGetActivities(activitiesResponse, GROUP_ID)
-        val balancesResponse = createBalancesResponse()
-        stubGetBalances(balancesResponse, GROUP_ID)
-        val settlementsResponse = createSettlementsResponse()
-        stubGetSettlements(settlementsResponse, GROUP_ID)
-        val members = createMembersDto(USER_ID, OTHER_USER_ID)
-        val listOfCurrencies = createCurrenciesDto("PLN", "USD", "EUR")
-        val groupResponse = createGroupResponse(members = members, groupCurrencies = listOfCurrencies)
-        stubGroupManagerGroupDetails(groupResponse, GROUP_ID)
-        val groupUsersDetails = createGroupUsersDetailsResponse()
-        stubGetUsersDetails(groupUsersDetails, GROUP_ID)
+            val attachmentResponse = createAttachment()
+            stubPostReportUrl(attachmentResponse, GROUP_ID, USER_ID)
+            stubEmailSenderReportNotification()
+            val activitiesResponse = createActivitiesResponse()
+            stubGetActivities(activitiesResponse, GROUP_ID)
+            val balancesResponse = createBalancesResponse()
+            stubGetBalances(balancesResponse, GROUP_ID)
+            val settlementsResponse = createSettlementsResponse()
+            stubGetSettlements(settlementsResponse, GROUP_ID)
+            val members = createMembersDto(USER_ID, OTHER_USER_ID)
+            val listOfCurrencies = createCurrenciesDto("PLN", "USD", "EUR")
+            val groupResponse = createGroupResponse(members = members, groupCurrencies = listOfCurrencies)
+            stubGroupManagerGroupDetails(groupResponse, GROUP_ID)
+            val groupUsersDetails = createGroupUsersDetailsResponse()
+            stubGetUsersDetails(groupUsersDetails, GROUP_ID)
 
-        val reportJob = createReportJob(
-            groupId = GROUP_ID,
-            creatorId = USER_ID,
-            balances = null,
-            activities = null,
-            settlements = null,
-            groupDetails = null,
-            usersDetails = null,
-            file = null,
-            attachmentId = null,
-            nextProcessAt = FIXED_TIME,
-        )
+            val reportJob =
+                createReportJob(
+                    groupId = GROUP_ID,
+                    creatorId = USER_ID,
+                    balances = null,
+                    activities = null,
+                    settlements = null,
+                    groupDetails = null,
+                    usersDetails = null,
+                    file = null,
+                    attachmentId = null,
+                    nextProcessAt = FIXED_TIME,
+                )
 
-        // when
-        reportJobRepository.save(reportJob)
+            // when
+            reportJobRepository.save(reportJob)
 
-        // then
-        waitTillExchangePlan(reportJobRepository, reportJob.id)
-        val report = reportRepository.getReport(reportJob.id)
-        report.shouldNotBeNull()
-        report.id shouldBe reportJob.id
-        report.groupId shouldBe reportJob.groupId
-        report.createdAt.shouldNotBeNull()
-        report.creatorId shouldBe reportJob.creatorId
-        report.attachmentId shouldBe attachmentResponse.id
-        report.format shouldBe reportJob.format
+            // then
+            waitTillExchangePlan(reportJobRepository, reportJob.id)
+            val report = reportRepository.getReport(reportJob.id)
+            report.shouldNotBeNull()
+            report.id shouldBe reportJob.id
+            report.groupId shouldBe reportJob.groupId
+            report.createdAt.shouldNotBeNull()
+            report.creatorId shouldBe reportJob.creatorId
+            report.attachmentId shouldBe attachmentResponse.id
+            report.format shouldBe reportJob.format
 
-        verifyPostReportUrl(GROUP_ID, USER_ID)
-        verifyEmailSenderReportNotification()
-    }
+            verifyPostReportUrl(GROUP_ID, USER_ID)
+            verifyEmailSenderReportNotification()
+        }
 
-    should("retry report job successfully") {
-        // given
-        val startedTime = testClock.instant()
-        whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
-        val attachmentResponse = createAttachment()
-        stubPostReportUrl(attachmentResponse, GROUP_ID, USER_ID, INTERNAL_SERVER_ERROR)
-        stubEmailSenderReportNotification(INTERNAL_SERVER_ERROR)
-        val activitiesResponse = createActivitiesResponse()
-        stubGetActivities(activitiesResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
-        val balancesResponse = createBalancesResponse()
-        stubGetBalances(balancesResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
-        val settlementsResponse = createSettlementsResponse()
-        stubGetSettlements(settlementsResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
-        val members = createMembersDto(USER_ID, OTHER_USER_ID)
-        val listOfCurrencies = createCurrenciesDto("PLN", "USD", "EUR")
-        val groupResponse = createGroupResponse(members = members, groupCurrencies = listOfCurrencies)
-        stubGroupManagerGroupDetails(groupResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
-        val groupUsersDetails = createGroupUsersDetailsResponse()
-        stubGetUsersDetails(groupUsersDetails, GROUP_ID, INTERNAL_SERVER_ERROR)
+        should("retry report job successfully") {
+            // given
+            val startedTime = testClock.instant()
+            whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
+            val attachmentResponse = createAttachment()
+            stubPostReportUrl(attachmentResponse, GROUP_ID, USER_ID, INTERNAL_SERVER_ERROR)
+            stubEmailSenderReportNotification(INTERNAL_SERVER_ERROR)
+            val activitiesResponse = createActivitiesResponse()
+            stubGetActivities(activitiesResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
+            val balancesResponse = createBalancesResponse()
+            stubGetBalances(balancesResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
+            val settlementsResponse = createSettlementsResponse()
+            stubGetSettlements(settlementsResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
+            val members = createMembersDto(USER_ID, OTHER_USER_ID)
+            val listOfCurrencies = createCurrenciesDto("PLN", "USD", "EUR")
+            val groupResponse = createGroupResponse(members = members, groupCurrencies = listOfCurrencies)
+            stubGroupManagerGroupDetails(groupResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
+            val groupUsersDetails = createGroupUsersDetailsResponse()
+            stubGetUsersDetails(groupUsersDetails, GROUP_ID, INTERNAL_SERVER_ERROR)
 
-        val reportJob = createReportJob(
-            groupId = GROUP_ID,
-            creatorId = USER_ID,
-            balances = null,
-            activities = null,
-            settlements = null,
-            groupDetails = null,
-            usersDetails = null,
-            file = null,
-            attachmentId = null,
-            nextProcessAt = FIXED_TIME,
-        )
+            val reportJob =
+                createReportJob(
+                    groupId = GROUP_ID,
+                    creatorId = USER_ID,
+                    balances = null,
+                    activities = null,
+                    settlements = null,
+                    groupDetails = null,
+                    usersDetails = null,
+                    file = null,
+                    attachmentId = null,
+                    nextProcessAt = FIXED_TIME,
+                )
 
-        // when
-        reportJobRepository.save(reportJob)
+            // when
+            reportJobRepository.save(reportJob)
 
-        // then
-        waitTillJobEndRetry(reportJobRepository, reportJob.id)
-        reportRepository.getReport(reportJob.id).shouldBeNull()
+            // then
+            waitTillJobEndRetry(reportJobRepository, reportJob.id)
+            reportRepository.getReport(reportJob.id).shouldBeNull()
 
-        // when
-        stubPostReportUrl(attachmentResponse, GROUP_ID, USER_ID)
-        stubEmailSenderReportNotification()
-        stubGetActivities(activitiesResponse, GROUP_ID)
-        stubGetBalances(balancesResponse, GROUP_ID)
-        stubGetSettlements(settlementsResponse, GROUP_ID)
-        stubGroupManagerGroupDetails(groupResponse, GROUP_ID)
-        stubGetUsersDetails(groupUsersDetails, GROUP_ID)
+            // when
+            stubPostReportUrl(attachmentResponse, GROUP_ID, USER_ID)
+            stubEmailSenderReportNotification()
+            stubGetActivities(activitiesResponse, GROUP_ID)
+            stubGetBalances(balancesResponse, GROUP_ID)
+            stubGetSettlements(settlementsResponse, GROUP_ID)
+            stubGroupManagerGroupDetails(groupResponse, GROUP_ID)
+            stubGetUsersDetails(groupUsersDetails, GROUP_ID)
 
-        // then
-        waitTillExchangePlan(reportJobRepository, reportJob.id)
-        val report = reportRepository.getReport(reportJob.id)
-        report.shouldNotBeNull()
-        report.id shouldBe reportJob.id
-        report.groupId shouldBe reportJob.groupId
-        report.createdAt.shouldNotBeNull()
-        report.creatorId shouldBe reportJob.creatorId
-        report.attachmentId shouldBe attachmentResponse.id
-        report.format shouldBe reportJob.format
-    }
-},)
+            // then
+            waitTillExchangePlan(reportJobRepository, reportJob.id)
+            val report = reportRepository.getReport(reportJob.id)
+            report.shouldNotBeNull()
+            report.id shouldBe reportJob.id
+            report.groupId shouldBe reportJob.groupId
+            report.createdAt.shouldNotBeNull()
+            report.creatorId shouldBe reportJob.creatorId
+            report.attachmentId shouldBe attachmentResponse.id
+            report.format shouldBe reportJob.format
+        }
+    })
 
-private suspend fun waitTillExchangePlan(reportJobRepository: ReportJobRepository, reportJobId: String) {
+private suspend fun waitTillExchangePlan(
+    reportJobRepository: ReportJobRepository,
+    reportJobId: String,
+) {
     while (true) {
         delay(1L.seconds.toJavaDuration())
         if (reportJobRepository.findById(reportJobId) == null) {
@@ -164,7 +169,10 @@ private suspend fun waitTillExchangePlan(reportJobRepository: ReportJobRepositor
     }
 }
 
-private suspend fun waitTillJobEndRetry(reportJobRepository: ReportJobRepository, reportJobId: String) {
+private suspend fun waitTillJobEndRetry(
+    reportJobRepository: ReportJobRepository,
+    reportJobId: String,
+) {
     while (true) {
         delay(1L.seconds.toJavaDuration())
         val reportJob = reportJobRepository.findById(reportJobId)

@@ -11,10 +11,11 @@ import pl.edu.agh.gem.util.createReportJob
 class ReportJobConsumerTest : ShouldSpec({
     val reportJobFinder = mock<ReportJobFinder>()
     val reportJobProcessor = mock<ReportJobProcessor>()
-    val reportConsumer = ReportJobConsumer(
-        reportJobFinder,
-        reportJobProcessor,
-    )
+    val reportConsumer =
+        ReportJobConsumer(
+            reportJobFinder,
+            reportJobProcessor,
+        )
 
     should("successfully process report job") {
         // given
@@ -27,4 +28,4 @@ class ReportJobConsumerTest : ShouldSpec({
         // then
         verify(reportJobProcessor).processReportJob(reportJob)
     }
-},)
+})

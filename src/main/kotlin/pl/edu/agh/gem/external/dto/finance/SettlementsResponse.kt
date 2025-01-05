@@ -27,12 +27,13 @@ fun SettlementsResponse.toDomain() =
         GroupSettlements(
             currency = it.currency,
             status = it.status,
-            settlements = it.settlements.map { settlement ->
-                Settlement(
-                    fromUserId = settlement.fromUserId,
-                    toUserId = settlement.toUserId,
-                    value = settlement.value,
-                )
-            },
+            settlements =
+                it.settlements.map { settlement ->
+                    Settlement(
+                        fromUserId = settlement.fromUserId,
+                        toUserId = settlement.toUserId,
+                        value = settlement.value,
+                    )
+                },
         )
     }

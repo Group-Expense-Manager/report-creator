@@ -22,4 +22,4 @@ class GenerateReportRequestTest : ShouldSpec({
         result.creatorId shouldBe creatorId
         result.groupId shouldBe groupId
     }
-},)
+})

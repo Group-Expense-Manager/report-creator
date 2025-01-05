@@ -43,4 +43,4 @@ class FetchBalanceStageTest : ShouldSpec({
         verify(fetchBalanceStage).nextStage(reportJob, FETCHING_SETTLEMENTS)
         verify(financeAdapterClient).getBalances(reportJob.groupId)
     }
-},)
+})

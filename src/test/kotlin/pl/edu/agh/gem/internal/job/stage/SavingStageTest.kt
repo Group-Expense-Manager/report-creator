@@ -28,13 +28,14 @@ class SavingStageTest : ShouldSpec({
 
     should("save report and proceed to NOTIFY state when attachmentId is not null") {
         // given
-        val reportJob = createReportJob(attachmentId = "someAttachmentId")
+        val attachmentId = "someAttachmentId"
+        val reportJob = createReportJob(attachmentId = attachmentId)
 
         // when
         savingStage.process(reportJob)
 
         // then
-        verify(reportRepository).save(reportJob.toReport(attachmentId = reportJob.attachmentId!!))
+        verify(reportRepository).save(reportJob.toReport(attachmentId = attachmentId))
         verify(savingStage).nextStage(reportJob, NOTIFY)
     }
-},)
+})

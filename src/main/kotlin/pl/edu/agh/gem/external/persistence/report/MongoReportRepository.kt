@@ -4,8 +4,10 @@ import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.stereotype.Repository
 import pl.edu.agh.gem.internal.model.report.Report
 import pl.edu.agh.gem.internal.persistence.ReportRepository
+import pl.edu.agh.gem.metrics.MeteredRepository
 
 @Repository
+@MeteredRepository
 class MongoReportRepository(
     private val mongoOperations: MongoOperations,
 ) : ReportRepository {

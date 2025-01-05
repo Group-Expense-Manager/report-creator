@@ -30,10 +30,11 @@ data class ReportJob(
     val retry: Long = 0,
 )
 
-fun ReportCreation.toReportJob(clock: Clock) = ReportJob(
-    groupId = groupId,
-    title = title,
-    creatorId = creatorId,
-    format = format,
-    nextProcessAt = clock.instant(),
-)
+fun ReportCreation.toReportJob(clock: Clock) =
+    ReportJob(
+        groupId = groupId,
+        title = title,
+        creatorId = creatorId,
+        format = format,
+        nextProcessAt = clock.instant(),
+    )

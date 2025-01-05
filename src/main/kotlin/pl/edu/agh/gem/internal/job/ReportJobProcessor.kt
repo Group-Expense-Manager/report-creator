@@ -1,6 +1,6 @@
 package pl.edu.agh.gem.internal.job
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import pl.edu.agh.gem.internal.model.report.ReportJob
 import pl.edu.agh.gem.internal.persistence.ReportJobRepository
@@ -14,10 +14,11 @@ class ReportJobProcessor(
         when (val nextState = reportJobSelector.select(reportJob.state).process(reportJob)) {
             is NextStage -> handleNextStage(nextState)
             is StageSuccess -> handleStateSuccess(reportJob)
-            is StageFailure -> handleStateFailure(reportJob)
-                .also {
-                    log.error(nextState.exception) { "Failure occurred on job $reportJob" }
-                }
+            is StageFailure ->
+                handleStateFailure(reportJob)
+                    .also {
+                        log.error(nextState.exception) { "Failure occurred on job $reportJob" }
+                    }
             is StageRetry -> handleStateRetry(reportJob)
         }
     }

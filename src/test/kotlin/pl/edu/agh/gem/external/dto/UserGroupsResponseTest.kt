@@ -19,4 +19,4 @@ class UserGroupsResponseTest : ShouldSpec({
         result.first().groupId shouldBe userGroupsResponse.groups.first().groupId
         result.last().groupId shouldBe userGroupsResponse.groups.last().groupId
     }
-},)
+})

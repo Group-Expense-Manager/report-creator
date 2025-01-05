@@ -19,4 +19,4 @@ class ErrorStageTest : ShouldSpec({
         // then
         result::class shouldBe StageFailure::class
     }
-},)
+})

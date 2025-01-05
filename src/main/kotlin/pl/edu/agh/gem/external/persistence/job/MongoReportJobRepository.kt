@@ -11,10 +11,12 @@ import pl.edu.agh.gem.config.ReportJobProcessorProperties
 import pl.edu.agh.gem.internal.model.report.ReportJob
 import pl.edu.agh.gem.internal.persistence.MissingReportJobException
 import pl.edu.agh.gem.internal.persistence.ReportJobRepository
+import pl.edu.agh.gem.metrics.MeteredRepository
 import java.time.Clock
 import java.time.Duration
 
 @Repository
+@MeteredRepository
 class MongoReportJobRepository(
     private val mongoOperations: MongoOperations,
     private val reportJobProcessorProperties: ReportJobProcessorProperties,
@@ -26,17 +28,19 @@ class MongoReportJobRepository(
 
     override fun findJobToProcessAndLock(): ReportJob? {
         val query = Query.query(Criteria.where(ReportJobEntity::nextProcessAt.name).lte(clock.instant()))
-        val update = Update()
-            .set(ReportJobEntity::nextProcessAt.name, clock.instant().plus(reportJobProcessorProperties.lockTime))
+        val update =
+            Update()
+                .set(ReportJobEntity::nextProcessAt.name, clock.instant().plus(reportJobProcessorProperties.lockTime))
         val options = FindAndModifyOptions.options().returnNew(false).upsert(false)
         return mongoOperations.findAndModify(query, update, options, ReportJobEntity::class.java)?.toDomain()
     }
 
     override fun updateNextProcessAtAndRetry(reportJob: ReportJob): ReportJob {
         val query = Query.query(Criteria.where(ReportJobEntity::id.name).isEqualTo(reportJob.id))
-        val update = Update()
-            .set(ReportJobEntity::nextProcessAt.name, clock.instant().plus(getDelay(reportJob.retry)))
-            .set(ReportJobEntity::retry.name, reportJob.retry + 1)
+        val update =
+            Update()
+                .set(ReportJobEntity::nextProcessAt.name, clock.instant().plus(getDelay(reportJob.retry)))
+                .set(ReportJobEntity::retry.name, reportJob.retry + 1)
         val options = FindAndModifyOptions.options().returnNew(true).upsert(false)
         mongoOperations.findAll(ReportJobEntity::class.java)
         return mongoOperations.findAndModify(query, update, options, ReportJobEntity::class.java)?.toDomain()

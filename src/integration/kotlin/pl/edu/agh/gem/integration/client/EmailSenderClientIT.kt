@@ -13,55 +13,55 @@ import pl.edu.agh.gem.util.createReportNotification
 class EmailSenderClientIT(
     private val emailSenderClient: EmailSenderClient,
 ) : BaseIntegrationSpec({
-    should("send report notification") {
-        // given
-        val reportNotification = createReportNotification()
-        stubEmailSenderReportNotification()
+        should("send report notification") {
+            // given
+            val reportNotification = createReportNotification()
+            stubEmailSenderReportNotification()
 
-        // when & then
-        shouldNotThrowAny {
-            emailSenderClient.notifyAboutReport(
-                reportId = reportNotification.id,
-                title = reportNotification.title,
-                creatorId = reportNotification.creatorId,
-                attachmentId = reportNotification.attachmentId,
-                groupId = reportNotification.groupId,
-            )
+            // when & then
+            shouldNotThrowAny {
+                emailSenderClient.notifyAboutReport(
+                    reportId = reportNotification.id,
+                    title = reportNotification.title,
+                    creatorId = reportNotification.creatorId,
+                    attachmentId = reportNotification.attachmentId,
+                    groupId = reportNotification.groupId,
+                )
+            }
         }
-    }
 
-    should("handle 4xx error response") {
-        // given
-        val reportNotification = createReportNotification()
-        stubEmailSenderReportNotification(BAD_REQUEST)
+        should("handle 4xx error response") {
+            // given
+            val reportNotification = createReportNotification()
+            stubEmailSenderReportNotification(BAD_REQUEST)
 
-        // when & then
-        // workaround for IOException
-        shouldThrow<Exception> {
-            emailSenderClient.notifyAboutReport(
-                reportId = reportNotification.id,
-                title = reportNotification.title,
-                creatorId = reportNotification.creatorId,
-                attachmentId = reportNotification.attachmentId,
-                groupId = reportNotification.groupId,
-            )
+            // when & then
+            // workaround for IOException
+            shouldThrow<Exception> {
+                emailSenderClient.notifyAboutReport(
+                    reportId = reportNotification.id,
+                    title = reportNotification.title,
+                    creatorId = reportNotification.creatorId,
+                    attachmentId = reportNotification.attachmentId,
+                    groupId = reportNotification.groupId,
+                )
+            }
         }
-    }
 
-    should("handle 5xx error response") {
-        // given
-        val reportNotification = createReportNotification()
-        stubEmailSenderReportNotification(INTERNAL_SERVER_ERROR)
+        should("handle 5xx error response") {
+            // given
+            val reportNotification = createReportNotification()
+            stubEmailSenderReportNotification(INTERNAL_SERVER_ERROR)
 
-        // when & then
-        shouldThrow<RetryableEmailSenderClientException> {
-            emailSenderClient.notifyAboutReport(
-                reportId = reportNotification.id,
-                title = reportNotification.title,
-                creatorId = reportNotification.creatorId,
-                attachmentId = reportNotification.attachmentId,
-                groupId = reportNotification.groupId,
-            )
+            // when & then
+            shouldThrow<RetryableEmailSenderClientException> {
+                emailSenderClient.notifyAboutReport(
+                    reportId = reportNotification.id,
+                    title = reportNotification.title,
+                    creatorId = reportNotification.creatorId,
+                    attachmentId = reportNotification.attachmentId,
+                    groupId = reportNotification.groupId,
+                )
+            }
         }
-    }
-},)
+    })

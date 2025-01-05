@@ -11,10 +11,16 @@ import pl.edu.agh.gem.integration.environment.ProjectConfig.wiremock
 import pl.edu.agh.gem.paths.Paths.INTERNAL
 
 private fun getActivitiesUrl(groupId: String) = "$INTERNAL/activities/groups/$groupId"
+
 private fun getBalancesUrl(groupId: String) = "$INTERNAL/balances/groups/$groupId"
+
 private fun getSettlementsUrl(groupId: String) = "$INTERNAL/settlements/groups/$groupId"
 
-fun stubGetActivities(body: Any? = null, groupId: String, statusCode: HttpStatus = OK) {
+fun stubGetActivities(
+    body: Any? = null,
+    groupId: String,
+    statusCode: HttpStatus = OK,
+) {
     wiremock.stubFor(
         get(urlMatching(getActivitiesUrl(groupId)))
             .willReturn(
@@ -26,7 +32,11 @@ fun stubGetActivities(body: Any? = null, groupId: String, statusCode: HttpStatus
     )
 }
 
-fun stubGetBalances(body: Any? = null, groupId: String, statusCode: HttpStatus = OK) {
+fun stubGetBalances(
+    body: Any? = null,
+    groupId: String,
+    statusCode: HttpStatus = OK,
+) {
     wiremock.stubFor(
         get(urlMatching(getBalancesUrl(groupId)))
             .willReturn(
@@ -38,7 +48,11 @@ fun stubGetBalances(body: Any? = null, groupId: String, statusCode: HttpStatus =
     )
 }
 
-fun stubGetSettlements(body: Any? = null, groupId: String, statusCode: HttpStatus = OK) {
+fun stubGetSettlements(
+    body: Any? = null,
+    groupId: String,
+    statusCode: HttpStatus = OK,
+) {
     wiremock.stubFor(
         get(urlMatching(getSettlementsUrl(groupId)))
             .willReturn(

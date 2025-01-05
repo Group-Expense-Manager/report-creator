@@ -16,11 +16,16 @@ import java.net.URI
 @Component
 @Lazy
 class ServiceTestClient(applicationContext: WebApplicationContext) {
-    private val webClient = bindToApplicationContext(applicationContext)
-        .configureClient()
-        .build()
+    private val webClient =
+        bindToApplicationContext(applicationContext)
+            .configureClient()
+            .build()
 
-    fun generateReport(gemUser: GemUser?, groupId: String, generateReportRequest: GenerateReportRequest): ResponseSpec {
+    fun generateReport(
+        gemUser: GemUser?,
+        groupId: String,
+        generateReportRequest: GenerateReportRequest,
+    ): ResponseSpec {
         return webClient.post()
             .uri(URI("$EXTERNAL/generate/groups/$groupId"))
             .headers {

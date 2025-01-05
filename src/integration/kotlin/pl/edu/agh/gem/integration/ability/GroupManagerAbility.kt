@@ -12,7 +12,11 @@ import pl.edu.agh.gem.paths.Paths.INTERNAL
 
 private fun createUserGroupsUrl(userId: String) = "$INTERNAL/groups/users/$userId"
 
-fun stubGroupManagerUserGroups(body: Any? = null, userId: String, statusCode: HttpStatus = OK) {
+fun stubGroupManagerUserGroups(
+    body: Any? = null,
+    userId: String,
+    statusCode: HttpStatus = OK,
+) {
     wiremock.stubFor(
         get(urlMatching(createUserGroupsUrl(userId)))
             .willReturn(
@@ -28,7 +32,11 @@ fun stubGroupManagerUserGroups(body: Any? = null, userId: String, statusCode: Ht
 
 private fun createGroupDataUrl(groupId: String) = "$INTERNAL/groups/$groupId"
 
-fun stubGroupManagerGroupDetails(body: Any? = null, groupId: String, statusCode: HttpStatus = OK) {
+fun stubGroupManagerGroupDetails(
+    body: Any? = null,
+    groupId: String,
+    statusCode: HttpStatus = OK,
+) {
     wiremock.stubFor(
         get(urlMatching(createGroupDataUrl(groupId)))
             .willReturn(

@@ -16,36 +16,36 @@ import pl.edu.agh.gem.util.createAttachment
 class AttachmentStoreClientIT(
     private val attachmentStoreClient: AttachmentStoreClient,
 ) : BaseIntegrationSpec({
-    should("upload attachment") {
-        // given
-        val attachmentResponse = createAttachment()
-        stubPostReportUrl(body = attachmentResponse, userId = USER_ID, groupId = GROUP_ID)
+        should("upload attachment") {
+            // given
+            val attachmentResponse = createAttachment()
+            stubPostReportUrl(body = attachmentResponse, userId = USER_ID, groupId = GROUP_ID)
 
-        // when
-        val result = attachmentStoreClient.uploadAttachment(GROUP_ID, USER_ID, Binary(ByteArray(0)))
+            // when
+            val result = attachmentStoreClient.uploadAttachment(GROUP_ID, USER_ID, Binary(ByteArray(0)))
 
-        // then
-        result.id.shouldNotBeNull()
-    }
-
-    should("handle 4xx error response") {
-        // given
-        stubPostReportUrl(groupId = GROUP_ID, userId = USER_ID, statusCode = BAD_REQUEST)
-
-        // when & then
-        // workaround for IOException
-        shouldThrow<Exception> {
-            attachmentStoreClient.uploadAttachment(GROUP_ID, USER_ID, Binary(ByteArray(0)))
+            // then
+            result.id.shouldNotBeNull()
         }
-    }
 
-    should("handle 5xx error response") {
-        // given
-        stubPostReportUrl(groupId = GROUP_ID, userId = USER_ID, statusCode = INTERNAL_SERVER_ERROR)
+        should("handle 4xx error response") {
+            // given
+            stubPostReportUrl(groupId = GROUP_ID, userId = USER_ID, statusCode = BAD_REQUEST)
 
-        // when & then
-        shouldThrow<RetryableAttachmentStoreClientException> {
-            attachmentStoreClient.uploadAttachment(GROUP_ID, USER_ID, Binary(ByteArray(0)))
+            // when & then
+            // workaround for IOException
+            shouldThrow<Exception> {
+                attachmentStoreClient.uploadAttachment(GROUP_ID, USER_ID, Binary(ByteArray(0)))
+            }
         }
-    }
-},)
+
+        should("handle 5xx error response") {
+            // given
+            stubPostReportUrl(groupId = GROUP_ID, userId = USER_ID, statusCode = INTERNAL_SERVER_ERROR)
+
+            // when & then
+            shouldThrow<RetryableAttachmentStoreClientException> {
+                attachmentStoreClient.uploadAttachment(GROUP_ID, USER_ID, Binary(ByteArray(0)))
+            }
+        }
+    })

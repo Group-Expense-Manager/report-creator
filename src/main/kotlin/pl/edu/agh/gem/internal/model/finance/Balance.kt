@@ -6,6 +6,7 @@ data class GroupBalances(
     val balances: List<Balance>,
     val currency: String,
 )
+
 data class Balance(
     val userId: String,
     val value: BigDecimal,

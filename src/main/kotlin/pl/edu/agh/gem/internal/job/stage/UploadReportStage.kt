@@ -18,11 +18,12 @@ class UploadReportStage(
             return if (reportJob.file == null) {
                 return nextStage(reportJob, FORMAT_SELECTION)
             } else {
-                val attachment = attachmentStoreClient.uploadAttachment(
-                    groupId = reportJob.groupId,
-                    file = reportJob.file,
-                    userId = reportJob.creatorId,
-                )
+                val attachment =
+                    attachmentStoreClient.uploadAttachment(
+                        groupId = reportJob.groupId,
+                        file = reportJob.file,
+                        userId = reportJob.creatorId,
+                    )
                 nextStage(reportJob.copy(attachmentId = attachment.id), SAVING)
             }
         } catch (e: RetryableAttachmentStoreClientException) {

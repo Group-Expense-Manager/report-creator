@@ -63,16 +63,17 @@ fun createActivitiesResponse(
     participantIds: List<String> = listOf(USER_ID, OTHER_USER_ID),
     date: Instant = Instant.now(),
 ): ActivitiesResponse {
-    val activityDTO = ActivityDTO(
-        id = activityId,
-        type = type,
-        creatorId = creatorId,
-        title = title,
-        value = value,
-        status = status,
-        participantIds = participantIds,
-        date = date,
-    )
+    val activityDTO =
+        ActivityDTO(
+            id = activityId,
+            type = type,
+            creatorId = creatorId,
+            title = title,
+            value = value,
+            status = status,
+            participantIds = participantIds,
+            date = date,
+        )
     return ActivitiesResponse(
         groupId = groupId,
         groupActivities = listOf(ActivityGroupDTO(currency, listOf(activityDTO))),
@@ -84,18 +85,21 @@ fun createBalancesResponse(
     currency: String = "USD",
     value: BigDecimal = BigDecimal("100.00"),
 ): BalancesResponse {
-    val userBalanceDto1 = UserBalanceDto(
-        userId = USER_ID,
-        value = value,
-    )
-    val userBalanceDto2 = UserBalanceDto(
-        userId = OTHER_USER_ID,
-        value = value.negate(),
-    )
-    val groupBalancesDto = GroupBalancesDto(
-        currency = currency,
-        userBalances = listOf(userBalanceDto1, userBalanceDto2),
-    )
+    val userBalanceDto1 =
+        UserBalanceDto(
+            userId = USER_ID,
+            value = value,
+        )
+    val userBalanceDto2 =
+        UserBalanceDto(
+            userId = OTHER_USER_ID,
+            value = value.negate(),
+        )
+    val groupBalancesDto =
+        GroupBalancesDto(
+            currency = currency,
+            userBalances = listOf(userBalanceDto1, userBalanceDto2),
+        )
     return BalancesResponse(
         groupId = groupId,
         balances = listOf(groupBalancesDto),
@@ -110,16 +114,18 @@ fun createSettlementsResponse(
     toUserId: String = OTHER_USER_ID,
     value: BigDecimal = BigDecimal("100.00"),
 ): SettlementsResponse {
-    val settlementDto = SettlementDto(
-        fromUserId = fromUserId,
-        toUserId = toUserId,
-        value = value,
-    )
-    val groupSettlementsDto = GroupSettlementsDto(
-        status = status,
-        currency = currency,
-        settlements = listOf(settlementDto),
-    )
+    val settlementDto =
+        SettlementDto(
+            fromUserId = fromUserId,
+            toUserId = toUserId,
+            value = value,
+        )
+    val groupSettlementsDto =
+        GroupSettlementsDto(
+            status = status,
+            currency = currency,
+            settlements = listOf(settlementDto),
+        )
     return SettlementsResponse(
         groupId = groupId,
         settlements = listOf(groupSettlementsDto),
@@ -140,9 +146,7 @@ fun createGroupResponse(
     )
 }
 
-fun createUserGroupsResponse(
-    groups: List<GroupDTO> = listOf(GroupDTO("groupId"), GroupDTO("groupId1")),
-): UserGroupsResponse {
+fun createUserGroupsResponse(groups: List<GroupDTO> = listOf(GroupDTO("groupId"), GroupDTO("groupId1"))): UserGroupsResponse {
     return UserGroupsResponse(groups = groups)
 }
 
@@ -157,10 +161,11 @@ fun createGenerateReportRequest(
 }
 
 fun createGroupUsersDetailsResponse(
-    details: List<UserDetailsDto> = listOf(
-        UserDetailsDto(USER_ID, "username1", "firstName1", "lastName1"),
-        UserDetailsDto(OTHER_USER_ID, "username2", "firstName2", "lastName2"),
-    ),
+    details: List<UserDetailsDto> =
+        listOf(
+            UserDetailsDto(USER_ID, "username1", "firstName1", "lastName1"),
+            UserDetailsDto(OTHER_USER_ID, "username2", "firstName2", "lastName2"),
+        ),
 ): GroupUsersDetailsResponse {
     return GroupUsersDetailsResponse(details = details)
 }
@@ -260,10 +265,11 @@ fun createBalance(
 }
 
 fun createGroupBalances(
-    balances: List<Balance> = listOf(
-        createBalance(userId = USER_ID, value = BigDecimal("100.00")),
-        createBalance(userId = OTHER_USER_ID, value = BigDecimal("-100.00")),
-    ),
+    balances: List<Balance> =
+        listOf(
+            createBalance(userId = USER_ID, value = BigDecimal("100.00")),
+            createBalance(userId = OTHER_USER_ID, value = BigDecimal("-100.00")),
+        ),
     currency: String = "USD",
 ): GroupBalances {
     return GroupBalances(
@@ -273,10 +279,11 @@ fun createGroupBalances(
 }
 
 fun createGroupDetails(
-    members: List<GroupMember> = listOf(
-        GroupMember(USER_ID),
-        GroupMember(OTHER_USER_ID),
-    ),
+    members: List<GroupMember> =
+        listOf(
+            GroupMember(USER_ID),
+            GroupMember(OTHER_USER_ID),
+        ),
     groupCurrencies: List<Currency> = listOf(Currency("USD")),
     name: String = "Test Group",
     attachmentId: String = "attachmentId",
@@ -290,13 +297,14 @@ fun createGroupDetails(
 }
 
 fun createGroupSettlements(
-    settlements: List<Settlement> = listOf(
-        Settlement(
-            fromUserId = USER_ID,
-            toUserId = OTHER_USER_ID,
-            value = BigDecimal("100.00"),
+    settlements: List<Settlement> =
+        listOf(
+            Settlement(
+                fromUserId = USER_ID,
+                toUserId = OTHER_USER_ID,
+                value = BigDecimal("100.00"),
+            ),
         ),
-    ),
     currency: String = "USD",
     status: SettlementStatus = SAVED,
 ): GroupSettlements {
@@ -321,29 +329,21 @@ fun createUserDetails(
     )
 }
 
-fun createUsersDetails(
-    users: Map<String, UserDetails> = listOf(USER_ID, OTHER_USER_ID).associateWith { createUserDetails(id = it) },
-): UsersDetails {
+fun createUsersDetails(users: Map<String, UserDetails> = listOf(USER_ID, OTHER_USER_ID).associateWith { createUserDetails(id = it) }): UsersDetails {
     return UsersDetails(
         users = users,
     )
 }
 
-fun createAttachment(
-    id: String = "attachmentId",
-): Attachment {
+fun createAttachment(id: String = "attachmentId"): Attachment {
     return Attachment(
         id = id,
     )
 }
 
-fun createCurrenciesDto(
-    vararg currency: String = arrayOf("USD", "EUR"),
-) = currency.map { CurrencyDto(it) }
+fun createCurrenciesDto(vararg currency: String = arrayOf("USD", "EUR")) = currency.map { CurrencyDto(it) }
 
-fun createMembersDto(
-    vararg members: String = arrayOf(USER_ID, OTHER_USER_ID),
-) = members.map { MemberDto(it) }
+fun createMembersDto(vararg members: String = arrayOf(USER_ID, OTHER_USER_ID)) = members.map { MemberDto(it) }
 
 fun createReportNotification(
     id: String = "id",
@@ -366,12 +366,11 @@ fun createReport(
     creatorId: String = USER_ID,
     createdAt: Instant = Instant.now(),
     attachmentId: String = "attachmentId",
-) =
-    Report(
-        id = id,
-        groupId = groupId,
-        format = format,
-        creatorId = creatorId,
-        createdAt = createdAt,
-        attachmentId = attachmentId,
-    )
+) = Report(
+    id = id,
+    groupId = groupId,
+    format = format,
+    creatorId = creatorId,
+    createdAt = createdAt,
+    attachmentId = attachmentId,
+)

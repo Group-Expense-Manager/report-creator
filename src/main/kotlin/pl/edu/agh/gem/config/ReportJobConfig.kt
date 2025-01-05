@@ -15,7 +15,6 @@ import java.util.concurrent.Executor
 
 @Configuration
 class ReportJobConfig {
-
     @Bean(destroyMethod = "destroy")
     @ConditionalOnProperty(prefix = REPORT_PROCESSOR_PREFIX, name = ["enabled"], havingValue = "true")
     fun financialReconciliationJobConsumer(
@@ -23,10 +22,11 @@ class ReportJobConfig {
         reportJobFinder: ReportJobFinder,
         reportJobProcessor: ReportJobProcessor,
     ): ReportJobConsumer {
-        val reportJobConsumer = ReportJobConsumer(
-            reportJobFinder,
-            reportJobProcessor,
-        )
+        val reportJobConsumer =
+            ReportJobConsumer(
+                reportJobFinder,
+                reportJobProcessor,
+            )
         reportJobConsumer.consume(jobConsumerExecutor)
         return reportJobConsumer
     }
@@ -47,12 +47,13 @@ class ReportJobConfig {
         executorFactory: ExecutorFactory,
         settings: ReportJobExecutorProperties,
     ): Executor {
-        val config = ExecutorConfig(
-            corePoolSize = settings.corePoolSize,
-            maxPoolSize = settings.maxPoolSize,
-            taskQueueSize = settings.queueCapacity,
-            threadPoolName = CONSUMER_POOL,
-        )
+        val config =
+            ExecutorConfig(
+                corePoolSize = settings.corePoolSize,
+                maxPoolSize = settings.maxPoolSize,
+                taskQueueSize = settings.queueCapacity,
+                threadPoolName = CONSUMER_POOL,
+            )
         return executorFactory.createExecutor(config)
     }
 
@@ -61,12 +62,13 @@ class ReportJobConfig {
         executorFactory: ExecutorFactory,
         settings: ReportJobProducerProperties,
     ): Executor {
-        val config = ExecutorConfig(
-            corePoolSize = settings.corePoolSize,
-            maxPoolSize = settings.maxPoolSize,
-            taskQueueSize = settings.queueCapacity,
-            threadPoolName = PRODUCER_POOL,
-        )
+        val config =
+            ExecutorConfig(
+                corePoolSize = settings.corePoolSize,
+                maxPoolSize = settings.maxPoolSize,
+                taskQueueSize = settings.queueCapacity,
+                threadPoolName = PRODUCER_POOL,
+            )
         return executorFactory.createExecutor(config)
     }
 

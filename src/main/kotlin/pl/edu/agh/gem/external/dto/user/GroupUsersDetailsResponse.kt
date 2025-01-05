@@ -14,13 +14,15 @@ data class UserDetailsDto(
     val lastName: String?,
 )
 
-fun GroupUsersDetailsResponse.toDomain() = UsersDetails(
-    details.associate { it.id to it.toUserDetails() },
-)
+fun GroupUsersDetailsResponse.toDomain() =
+    UsersDetails(
+        details.associate { it.id to it.toUserDetails() },
+    )
 
-fun UserDetailsDto.toUserDetails() = UserDetails(
-    id = id,
-    username = username,
-    firstName = firstName,
-    lastName = lastName,
-)
+fun UserDetailsDto.toUserDetails() =
+    UserDetails(
+        id = id,
+        username = username,
+        firstName = firstName,
+        lastName = lastName,
+    )

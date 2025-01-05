@@ -15,40 +15,40 @@ import pl.edu.agh.gem.util.createGroupUsersDetailsResponse
 class UserDetailsManagerClientIT(
     private val userDetailsManagerClient: UserDetailsManagerClient,
 ) : BaseIntegrationSpec({
-    should("get group users details") {
-        // given
-        val groupUsersDetails = createGroupUsersDetailsResponse()
-        stubGetUsersDetails(body = groupUsersDetails, groupId = GROUP_ID)
+        should("get group users details") {
+            // given
+            val groupUsersDetails = createGroupUsersDetailsResponse()
+            stubGetUsersDetails(body = groupUsersDetails, groupId = GROUP_ID)
 
-        // when
-        val result = userDetailsManagerClient.getUsersDetails(GROUP_ID)
+            // when
+            val result = userDetailsManagerClient.getUsersDetails(GROUP_ID)
 
-        // then
-        result.users.forEach { (key, value) ->
-            value.id shouldBe key
-            value.lastName shouldBe groupUsersDetails.details.find { it.id == key }?.lastName
-            value.firstName shouldBe groupUsersDetails.details.find { it.id == key }?.firstName
-            value.username shouldBe groupUsersDetails.details.find { it.id == key }?.username
+            // then
+            result.users.forEach { (key, value) ->
+                value.id shouldBe key
+                value.lastName shouldBe groupUsersDetails.details.find { it.id == key }?.lastName
+                value.firstName shouldBe groupUsersDetails.details.find { it.id == key }?.firstName
+                value.username shouldBe groupUsersDetails.details.find { it.id == key }?.username
+            }
         }
-    }
 
-    should("throw UserDetailsManagerClientException when we send bad request") {
-        // given
-        stubGetUsersDetails(groupId = GROUP_ID, statusCode = BAD_REQUEST)
+        should("throw UserDetailsManagerClientException when we send bad request") {
+            // given
+            stubGetUsersDetails(groupId = GROUP_ID, statusCode = BAD_REQUEST)
 
-        // when & then
-        shouldThrow<UserDetailsManagerClientException> {
-            userDetailsManagerClient.getUsersDetails(GROUP_ID)
+            // when & then
+            shouldThrow<UserDetailsManagerClientException> {
+                userDetailsManagerClient.getUsersDetails(GROUP_ID)
+            }
         }
-    }
 
-    should("throw RetryableUserDetailsManagerClientException when client has internal error") {
-        // given
-        stubGetUsersDetails(groupId = GROUP_ID, statusCode = INTERNAL_SERVER_ERROR)
+        should("throw RetryableUserDetailsManagerClientException when client has internal error") {
+            // given
+            stubGetUsersDetails(groupId = GROUP_ID, statusCode = INTERNAL_SERVER_ERROR)
 
-        // when & then
-        shouldThrow<RetryableUserDetailsManagerClientException> {
-            userDetailsManagerClient.getUsersDetails(GROUP_ID)
+            // when & then
+            shouldThrow<RetryableUserDetailsManagerClientException> {
+                userDetailsManagerClient.getUsersDetails(GROUP_ID)
+            }
         }
-    }
-},)
+    })

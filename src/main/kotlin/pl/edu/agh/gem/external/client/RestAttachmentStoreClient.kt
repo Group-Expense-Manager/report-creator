@@ -1,7 +1,7 @@
 package pl.edu.agh.gem.external.client
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.resilience4j.retry.annotation.Retry
-import mu.KotlinLogging
 import org.bson.types.Binary
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpEntity
@@ -21,24 +21,32 @@ import pl.edu.agh.gem.internal.client.AttachmentStoreClient
 import pl.edu.agh.gem.internal.client.AttachmentStoreClientException
 import pl.edu.agh.gem.internal.client.RetryableAttachmentStoreClientException
 import pl.edu.agh.gem.internal.model.finance.Attachment
+import pl.edu.agh.gem.metrics.MeteredClient
 import pl.edu.agh.gem.paths.Paths.INTERNAL
 import java.io.IOException
 
 @Component
+@MeteredClient
 class RestAttachmentStoreClient(
     @Qualifier("AttachmentStoreRestTemplate") val restTemplate: RestTemplate,
     val attachmentStoreProperties: AttachmentStoreProperties,
 ) : AttachmentStoreClient {
-
-    private fun resolveUploadAttachmentAddress(groupId: String, userId: String): String =
-        UriComponentsBuilder.fromHttpUrl(attachmentStoreProperties.url)
+    private fun resolveUploadAttachmentAddress(
+        groupId: String,
+        userId: String,
+    ): String =
+        UriComponentsBuilder.fromUriString(attachmentStoreProperties.url)
             .path("$INTERNAL/groups/{groupId}")
             .queryParam("userId", userId)
             .buildAndExpand(groupId)
             .toUriString()
 
     @Retry(name = "attachmentStore")
-    override fun uploadAttachment(groupId: String, userId: String, file: Binary): Attachment {
+    override fun uploadAttachment(
+        groupId: String,
+        userId: String,
+        file: Binary,
+    ): Attachment {
         return try {
             restTemplate.exchange(
                 resolveUploadAttachmentAddress(groupId, userId),
@@ -51,7 +59,10 @@ class RestAttachmentStoreClient(
         }
     }
 
-    private fun <T> handleAttachmentStoreException(ex: Exception, action: String): T {
+    private fun <T> handleAttachmentStoreException(
+        ex: Exception,
+        action: String,
+    ): T {
         when (ex) {
             is HttpClientErrorException -> {
                 logger.warn(ex) { "Client-side exception while trying to $action" }

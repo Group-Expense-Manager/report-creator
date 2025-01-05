@@ -19,9 +19,10 @@ data class CurrencyDto(
     val code: String,
 )
 
-fun GroupResponse.toDomain() = GroupDetails(
-    members = members.map { GroupMember(it.id) },
-    groupCurrencies = groupCurrencies.map { Currency(it.code) },
-    name = name,
-    attachmentId = attachmentId,
-)
+fun GroupResponse.toDomain() =
+    GroupDetails(
+        members = members.map { GroupMember(it.id) },
+        groupCurrencies = groupCurrencies.map { Currency(it.code) },
+        name = name,
+        attachmentId = attachmentId,
+    )
