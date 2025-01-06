@@ -8,7 +8,8 @@ import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import pl.edu.agh.gem.helper.group.DummyGroup.GROUP_ID
 import pl.edu.agh.gem.helper.user.DummyUser.USER_ID
 import pl.edu.agh.gem.integration.BaseIntegrationSpec
-import pl.edu.agh.gem.integration.ability.stubPostReportUrl
+import pl.edu.agh.gem.integration.ability.stubGetAttachment
+import pl.edu.agh.gem.integration.ability.stubPostReport
 import pl.edu.agh.gem.internal.client.AttachmentStoreClient
 import pl.edu.agh.gem.internal.client.RetryableAttachmentStoreClientException
 import pl.edu.agh.gem.util.createAttachment
@@ -19,7 +20,7 @@ class AttachmentStoreClientIT(
         should("upload attachment") {
             // given
             val attachmentResponse = createAttachment()
-            stubPostReportUrl(body = attachmentResponse, userId = USER_ID, groupId = GROUP_ID)
+            stubPostReport(body = attachmentResponse, userId = USER_ID, groupId = GROUP_ID)
 
             // when
             val result = attachmentStoreClient.uploadAttachment(GROUP_ID, USER_ID, Binary(ByteArray(0)))
@@ -30,7 +31,7 @@ class AttachmentStoreClientIT(
 
         should("handle 4xx error response") {
             // given
-            stubPostReportUrl(groupId = GROUP_ID, userId = USER_ID, statusCode = BAD_REQUEST)
+            stubPostReport(groupId = GROUP_ID, userId = USER_ID, statusCode = BAD_REQUEST)
 
             // when & then
             // workaround for IOException
@@ -41,11 +42,45 @@ class AttachmentStoreClientIT(
 
         should("handle 5xx error response") {
             // given
-            stubPostReportUrl(groupId = GROUP_ID, userId = USER_ID, statusCode = INTERNAL_SERVER_ERROR)
+            stubPostReport(groupId = GROUP_ID, userId = USER_ID, statusCode = INTERNAL_SERVER_ERROR)
 
             // when & then
             shouldThrow<RetryableAttachmentStoreClientException> {
                 attachmentStoreClient.uploadAttachment(GROUP_ID, USER_ID, Binary(ByteArray(0)))
+            }
+        }
+        should("get attachment") {
+            // given
+            val attachmentId = "attachmentId"
+            stubGetAttachment(groupId = GROUP_ID, attachmentId = attachmentId)
+
+            // when
+            val result = attachmentStoreClient.getAttachment(GROUP_ID, USER_ID)
+
+            // then
+            result.shouldNotBeNull()
+        }
+
+        should("handle 4xx error response for retrieving attachment") {
+            // given
+            val attachmentId = "attachmentId"
+            stubGetAttachment(groupId = GROUP_ID, attachmentId = attachmentId, statusCode = BAD_REQUEST)
+
+            // when & then
+            // workaround for IOException
+            shouldThrow<Exception> {
+                attachmentStoreClient.getAttachment(GROUP_ID, USER_ID)
+            }
+        }
+
+        should("handle 5xx error response for retrieving attachment") {
+            // given
+            val attachmentId = "attachmentId"
+            stubGetAttachment(groupId = GROUP_ID, attachmentId = attachmentId, statusCode = INTERNAL_SERVER_ERROR)
+
+            // when & then
+            shouldThrow<RetryableAttachmentStoreClientException> {
+                attachmentStoreClient.getAttachment(GROUP_ID, USER_ID)
             }
         }
     })

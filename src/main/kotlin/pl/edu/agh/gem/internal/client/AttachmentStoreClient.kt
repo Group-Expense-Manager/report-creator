@@ -9,6 +9,11 @@ interface AttachmentStoreClient {
         userId: String,
         file: Binary,
     ): Attachment
+
+    fun getAttachment(
+        groupId: String,
+        attachmentId: String,
+    ): ByteArray
 }
 
 class AttachmentStoreClientException(override val message: String?) : RuntimeException()

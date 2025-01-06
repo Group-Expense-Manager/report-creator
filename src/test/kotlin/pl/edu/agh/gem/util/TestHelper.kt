@@ -133,12 +133,14 @@ fun createSettlementsResponse(
 }
 
 fun createGroupResponse(
+    groupId: String = "groupId",
     members: List<MemberDto> = listOf(MemberDto(USER_ID), MemberDto(OTHER_USER_ID)),
     groupCurrencies: List<CurrencyDto> = listOf(CurrencyDto("USD"), CurrencyDto("EUR")),
     name: String = "Test Group",
     attachmentId: String = "attachment123",
 ): GroupResponse {
     return GroupResponse(
+        groupId = groupId,
         members = members,
         groupCurrencies = groupCurrencies,
         name = name,
@@ -279,6 +281,7 @@ fun createGroupBalances(
 }
 
 fun createGroupDetails(
+    groupId: String = "groupId",
     members: List<GroupMember> =
         listOf(
             GroupMember(USER_ID),
@@ -289,6 +292,7 @@ fun createGroupDetails(
     attachmentId: String = "attachmentId",
 ): GroupDetails {
     return GroupDetails(
+        groupId = groupId,
         members = members,
         groupCurrencies = groupCurrencies,
         name = name,

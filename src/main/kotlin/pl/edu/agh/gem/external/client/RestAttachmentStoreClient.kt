@@ -6,6 +6,7 @@ import org.bson.types.Binary
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
@@ -41,6 +42,11 @@ class RestAttachmentStoreClient(
             .buildAndExpand(groupId)
             .toUriString()
 
+    private fun resolveRetriveAttachmentAddress(
+        groupId: String,
+        userId: String,
+    ): String = "$INTERNAL/groups/{groupId}/attachments/{attachmentId}"
+
     @Retry(name = "attachmentStore")
     override fun uploadAttachment(
         groupId: String,
@@ -56,6 +62,23 @@ class RestAttachmentStoreClient(
             ).body?.toDomain() ?: throw AttachmentStoreClientException("While trying to upload attachment, we received an empty body")
         } catch (ex: Exception) {
             handleAttachmentStoreException(ex, "upload attachment")
+        }
+    }
+
+    @Retry(name = "attachmentStore")
+    override fun getAttachment(
+        groupId: String,
+        attachmentId: String,
+    ): ByteArray {
+        return try {
+            restTemplate.exchange(
+                resolveRetriveAttachmentAddress(groupId, attachmentId),
+                GET,
+                HttpEntity<Any>(HttpHeaders().withAppAcceptType()),
+                ByteArray::class.java,
+            ).body ?: throw AttachmentStoreClientException("While trying to retrieve attachment we receive empty body")
+        } catch (ex: Exception) {
+            handleAttachmentStoreException(ex, "retrieve attachment")
         }
     }
 

@@ -7,6 +7,7 @@ import pl.edu.agh.gem.internal.job.ReportJobState.FETCHING_GROUP_DETAILS
 import pl.edu.agh.gem.internal.job.ReportJobState.FETCHING_SETTLEMENTS
 import pl.edu.agh.gem.internal.job.ReportJobState.FETCHING_USERS_DETAILS
 import pl.edu.agh.gem.internal.job.ReportJobState.FORMAT_SELECTION
+import pl.edu.agh.gem.internal.job.ReportJobState.GENERATING_PDF_REPORT
 import pl.edu.agh.gem.internal.job.ReportJobState.GENERATING_XLSX_REPORT
 import pl.edu.agh.gem.internal.job.ReportJobState.NOTIFY
 import pl.edu.agh.gem.internal.job.ReportJobState.SAVING
@@ -19,6 +20,7 @@ import pl.edu.agh.gem.internal.job.stage.FetchGroupDetailsStage
 import pl.edu.agh.gem.internal.job.stage.FetchSettlementsStage
 import pl.edu.agh.gem.internal.job.stage.FetchUsersDetailsStage
 import pl.edu.agh.gem.internal.job.stage.FormatSelectionStage
+import pl.edu.agh.gem.internal.job.stage.GeneratePDFReportStage
 import pl.edu.agh.gem.internal.job.stage.GenerateXLSXReportStage
 import pl.edu.agh.gem.internal.job.stage.NotifyStage
 import pl.edu.agh.gem.internal.job.stage.SavingStage
@@ -35,6 +37,7 @@ class ReportJobSelector(
     private val fetchGroupDetailsStage: FetchGroupDetailsStage,
     private val formatSelectionStage: FormatSelectionStage,
     private val generateXLSXReportStage: GenerateXLSXReportStage,
+    private val generatePDFReportStage: GeneratePDFReportStage,
     private val uploadReportStage: UploadReportStage,
     private val savingStage: SavingStage,
     private val notifyStage: NotifyStage,
@@ -50,6 +53,7 @@ class ReportJobSelector(
             FETCHING_GROUP_DETAILS -> fetchGroupDetailsStage
             FORMAT_SELECTION -> formatSelectionStage
             GENERATING_XLSX_REPORT -> generateXLSXReportStage
+            GENERATING_PDF_REPORT -> generatePDFReportStage
             UPLOAD_REPORT -> uploadReportStage
             SAVING -> savingStage
             NOTIFY -> notifyStage

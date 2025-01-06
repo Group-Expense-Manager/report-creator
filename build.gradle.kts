@@ -65,6 +65,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("com.itextpdf:itextpdf:5.5.13.4")
 
     implementation(libs.kotlinlogging)
     implementation(libs.lib.gem)
