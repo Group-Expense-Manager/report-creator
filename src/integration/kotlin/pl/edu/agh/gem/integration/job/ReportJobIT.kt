@@ -70,7 +70,7 @@ class ReportJobIT(
                 val groupUsersDetails = createGroupUsersDetailsResponse()
                 stubGetUsersDetails(groupUsersDetails, GROUP_ID)
                 stubGetAttachment(groupId = GROUP_ID, attachmentId = groupResponse.attachmentId)
-                
+
                 val reportJob =
                     createReportJob(
                         groupId = GROUP_ID,
