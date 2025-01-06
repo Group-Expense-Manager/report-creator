@@ -1,7 +1,6 @@
 package pl.edu.agh.gem.internal.job.stage
 
 import io.kotest.core.spec.style.ShouldSpec
-import org.bson.types.Binary
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.spy
 import org.mockito.kotlin.verify
@@ -35,14 +34,13 @@ class GeneratePDFReportStageTest : ShouldSpec(
             whenever(attachmentStoreClient.getAttachment(groupDetails.groupId, groupDetails.attachmentId))
                 .thenReturn(ResourceLoader.loadResourceAsByteArray("example-image.jpeg"))
             // when
-            val reportFile: Binary =
-                generatePDFReportStage.generateReport(
-                    balances = balances,
-                    settlements = settlements,
-                    activities = activities,
-                    usersDetails = usersDetails,
-                    groupDetails = groupDetails,
-                )
+            generatePDFReportStage.generateReport(
+                balances = balances,
+                settlements = settlements,
+                activities = activities,
+                usersDetails = usersDetails,
+                groupDetails = groupDetails,
+            )
 
             // then
             verify(generatePDFReportStage).generateReport(

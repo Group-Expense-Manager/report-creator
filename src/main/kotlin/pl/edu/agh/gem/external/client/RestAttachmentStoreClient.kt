@@ -42,10 +42,10 @@ class RestAttachmentStoreClient(
             .buildAndExpand(groupId)
             .toUriString()
 
-    private fun resolveRetriveAttachmentAddress(
+    private fun resolveRetrieveAttachmentAddress(
         groupId: String,
-        userId: String,
-    ): String = "$INTERNAL/groups/{groupId}/attachments/{attachmentId}"
+        attachmentId: String,
+    ): String = "${attachmentStoreProperties.url}$INTERNAL/groups/$groupId/attachments/$attachmentId"
 
     @Retry(name = "attachmentStore")
     override fun uploadAttachment(
@@ -72,7 +72,7 @@ class RestAttachmentStoreClient(
     ): ByteArray {
         return try {
             restTemplate.exchange(
-                resolveRetriveAttachmentAddress(groupId, attachmentId),
+                resolveRetrieveAttachmentAddress(groupId, attachmentId),
                 GET,
                 HttpEntity<Any>(HttpHeaders().withAppAcceptType()),
                 ByteArray::class.java,

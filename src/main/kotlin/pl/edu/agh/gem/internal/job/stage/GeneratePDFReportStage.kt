@@ -101,7 +101,7 @@ class GeneratePDFReportStage(
         addCircularImage(groupImage, writer, isLogo = false)
         addCircularImage(logoImage, writer, isLogo = true)
 
-        repeat(5) { add(Paragraph(" ")) }
+        repeat(NUM_OF_EMPTY_PARAGRAPHS_IN_SUMMARY) { add(Paragraph(" ")) }
 
         val title =
             Paragraph("Activities Summary for group ${groupDetails.name}", titleFont).apply {
@@ -120,10 +120,10 @@ class GeneratePDFReportStage(
 
         addSeparatorLine()
 
-        val table = PdfPTable(5)
+        val table = PdfPTable(NUM_OF_COLUMNS_IN_SUMMARY_TABLE)
         table.widthPercentage = TABLE_WIDTH_PERCENTAGE
-        table.setWidths(floatArrayOf(2f, 1.5f, 1.5f, 1f, 2f))
-        table.headerRows = 1
+        table.setWidths(SUMMARY_TABLE_WIDTHS)
+        table.headerRows = NUM_OF_HEADER_ROWS_IN_TABLE
         table.spacingBefore = TABLE_SPACING_BEFORE
         table.spacingAfter = TABLE_SPACING_AFTER
 
@@ -133,23 +133,25 @@ class GeneratePDFReportStage(
         table.addCell(createCell("Count", tableHeaderFont, primaryColorBase))
         table.addCell(createCell("Total Amount", tableHeaderFont, primaryColorBase))
 
-        activities.flatMap { groupActivity ->
-            groupActivity.activities.map { activity ->
-                Triple(activity.type, activity.status, groupActivity.currency) to activity.value
-            }
-        }.groupBy({ it.first }) { it.second }
-            .forEach { (typeStatusCurrency, values) ->
-                val count = values.size
-                val totalAmount = values.reduce(BigDecimal::add)
-                val (type, status, currency) = typeStatusCurrency
+        val groupedActivities =
+            activities.flatMap { groupActivity ->
+                groupActivity.activities.map { activity ->
+                    Triple(activity.type, activity.status, groupActivity.currency) to activity.value
+                }
+            }.groupBy({ it.first }) { it.second }
 
-                val cellColor = if (table.rows.size % 2 == 0) primaryColorLightest else whiteColorLightest
-                table.addCell(createCell(type.toString(), backgroundColor = cellColor))
-                table.addCell(createCell(status.toString(), backgroundColor = cellColor))
-                table.addCell(createCell(currency, backgroundColor = cellColor))
-                table.addCell(createCell(count.toString(), backgroundColor = cellColor))
-                table.addCell(createCell(totalAmount.toString(), backgroundColor = cellColor))
-            }
+        groupedActivities.forEach { (typeStatusCurrency, values) ->
+            val count = values.size
+            val totalAmount = values.reduce(BigDecimal::add)
+            val (type, status, currency) = typeStatusCurrency
+
+            val cellColor = if (table.rows.size % 2 == 0) primaryColorLightest else whiteColorLightest
+            table.addCell(createCell(type.toString(), backgroundColor = cellColor))
+            table.addCell(createCell(status.toString(), backgroundColor = cellColor))
+            table.addCell(createCell(currency, backgroundColor = cellColor))
+            table.addCell(createCell(count.toString(), backgroundColor = cellColor))
+            table.addCell(createCell(totalAmount.toString(), backgroundColor = cellColor))
+        }
 
         add(Paragraph("Activities Summary by Type, Status, and Currency", subHeaderFont))
         add(table)
@@ -161,10 +163,10 @@ class GeneratePDFReportStage(
         isLogo: Boolean,
     ) {
         val canvas = writer.directContent
-        val x = if (isLogo) 465f else 65f
-        val y = 750f
-        val radius = 32f
-        val borderWidth = 2f
+        val x = if (isLogo) LOGO_X_COORDINATE else GROUP_IMAGE_X_COORDINATE
+        val y = IMAGE_Y_COORDINATE
+        val radius = IMAGE_RADIUS
+        val borderWidth = IMAGE_BORDER_WIDTH
 
         canvas.setColorStroke(whiteColorLightest)
         canvas.setLineWidth(borderWidth)
@@ -178,7 +180,7 @@ class GeneratePDFReportStage(
 
         val image = Image.getInstance(imageBytes)
         image.scaleToFit(radius * 2, radius * 2)
-        image.setAbsolutePosition(0f, 0f)
+        image.setAbsolutePosition(IMAGE_ABSOLUTE_X_POSITION, IMAGE_ABSOLUTE_Y_POSITION)
         mask.addImage(image)
 
         canvas.addTemplate(mask, x, y)
@@ -186,11 +188,12 @@ class GeneratePDFReportStage(
 
     private fun loadImageFromResources(path: String): ByteArray {
         val inputStream = this.javaClass.getResourceAsStream(path)
-        return inputStream!!.readBytes()
+        return inputStream?.readBytes() ?: throw ImageNotFoundException("Image not found in resources: $path")
     }
 
     private fun Document.addSeparatorLine() {
-        val separator = LineSeparator(1f, 100f, primaryColorBase, LineSeparator.ALIGN_CENTER, -1f)
+        val separator =
+            LineSeparator(SEPARATOR_LINE_WIDTH, SEPARATOR_LINE_PERCENTAGE, primaryColorBase, LineSeparator.ALIGN_CENTER, SEPARATOR_LINE_OFFSET)
         add(separator)
     }
 
@@ -204,8 +207,8 @@ class GeneratePDFReportStage(
             horizontalAlignment = ALIGN_CENTER
             verticalAlignment = ALIGN_MIDDLE
             border = NO_BORDER
-            borderWidth = 0f
-            borderWidthBottom = 1f
+            borderWidth = CELL_BORDER_WIDTH
+            borderWidthBottom = CELL_BORDER_BOTTOM_WIDTH
         }
     }
 
@@ -214,13 +217,13 @@ class GeneratePDFReportStage(
         usersDetails: UsersDetails,
     ) {
         addSeparatorLine()
-        add(Paragraph("Activity Report for ${groupActivity.currency}", Font(HELVETICA, 18f, BOLD, primaryColorBase)))
+        add(Paragraph("Activity Report for ${groupActivity.currency}", Font(HELVETICA, ACTIVITY_REPORT_FONT_SIZE, BOLD, primaryColorBase)))
         add(Paragraph(" "))
 
-        val table = PdfPTable(4)
+        val table = PdfPTable(NUM_OF_COLUMNS_IN_ACTIVITY_TABLE)
         table.widthPercentage = TABLE_WIDTH_PERCENTAGE
-        table.setWidths(floatArrayOf(3f, 2f, 2f, 2f))
-        table.headerRows = 1
+        table.setWidths(ACTIVITY_TABLE_WIDTHS)
+        table.headerRows = NUM_OF_HEADER_ROWS_IN_TABLE
         table.spacingBefore = TABLE_SPACING_BEFORE
         table.spacingAfter = TABLE_SPACING_AFTER
 
@@ -246,13 +249,13 @@ class GeneratePDFReportStage(
         usersDetails: UsersDetails,
     ) {
         addSeparatorLine()
-        add(Paragraph("Balances - ${balances.currency}", Font(HELVETICA, 18f, BOLD, primaryColorBase)))
+        add(Paragraph("Balances - ${balances.currency}", Font(HELVETICA, BALANCES_REPORT_FONT_SIZE, BOLD, primaryColorBase)))
         add(Paragraph(" "))
 
-        val table = PdfPTable(3)
+        val table = PdfPTable(NUM_OF_COLUMNS_IN_BALANCE_TABLE)
         table.widthPercentage = TABLE_WIDTH_PERCENTAGE
-        table.setWidths(floatArrayOf(3f, 2f, 2f))
-        table.headerRows = 1
+        table.setWidths(BALANCE_TABLE_WIDTHS)
+        table.headerRows = NUM_OF_HEADER_ROWS_IN_TABLE
         table.spacingBefore = TABLE_SPACING_BEFORE
         table.spacingAfter = TABLE_SPACING_AFTER
 
@@ -276,13 +279,13 @@ class GeneratePDFReportStage(
         usersDetails: UsersDetails,
     ) {
         addSeparatorLine()
-        add(Paragraph("Settlements - ${groupSettlements.currency}", Font(HELVETICA, 18f, BOLD, primaryColorBase)))
+        add(Paragraph("Settlements - ${groupSettlements.currency}", Font(HELVETICA, SETTLEMENTS_REPORT_FONT_SIZE, BOLD, primaryColorBase)))
         add(Paragraph(" "))
 
-        val table = PdfPTable(4)
+        val table = PdfPTable(NUM_OF_COLUMNS_IN_SETTLEMENTS_TABLE)
         table.widthPercentage = TABLE_WIDTH_PERCENTAGE
-        table.setWidths(floatArrayOf(2f, 2f, 2f, 2f))
-        table.headerRows = 1
+        table.setWidths(SETTLEMENTS_TABLE_WIDTHS)
+        table.headerRows = NUM_OF_HEADER_ROWS_IN_TABLE
         table.spacingBefore = TABLE_SPACING_BEFORE
         table.spacingAfter = TABLE_SPACING_AFTER
 
@@ -317,8 +320,41 @@ class GeneratePDFReportStage(
         const val TABLE_SPACING_BEFORE = 20f
         const val TABLE_SPACING_AFTER = 20f
 
+        const val NUM_OF_EMPTY_PARAGRAPHS_IN_SUMMARY = 5
+        const val NUM_OF_COLUMNS_IN_SUMMARY_TABLE = 5
+        const val NUM_OF_COLUMNS_IN_ACTIVITY_TABLE = 4
+        const val NUM_OF_COLUMNS_IN_BALANCE_TABLE = 3
+        const val NUM_OF_COLUMNS_IN_SETTLEMENTS_TABLE = 4
+        const val NUM_OF_HEADER_ROWS_IN_TABLE = 1
+
+        const val LOGO_X_COORDINATE = 465f
+        const val GROUP_IMAGE_X_COORDINATE = 65f
+        const val IMAGE_Y_COORDINATE = 750f
+        const val IMAGE_RADIUS = 32f
+        const val IMAGE_BORDER_WIDTH = 2f
+        const val IMAGE_ABSOLUTE_X_POSITION = 0f
+        const val IMAGE_ABSOLUTE_Y_POSITION = 0f
+
+        const val SEPARATOR_LINE_WIDTH = 1f
+        const val SEPARATOR_LINE_PERCENTAGE = 100f
+        const val SEPARATOR_LINE_OFFSET = -1f
+
+        const val CELL_BORDER_WIDTH = 0f
+        const val CELL_BORDER_BOTTOM_WIDTH = 1f
+
+        const val ACTIVITY_REPORT_FONT_SIZE = 18f
+        const val BALANCES_REPORT_FONT_SIZE = 18f
+        const val SETTLEMENTS_REPORT_FONT_SIZE = 18f
+
         val dateFormatter =
             DateTimeFormatter.ofPattern("dd MMM YYYY HH:mm")
                 .withZone(ZoneId.systemDefault())
+
+        val SUMMARY_TABLE_WIDTHS = floatArrayOf(2f, 1.5f, 1.5f, 1f, 2f)
+        val ACTIVITY_TABLE_WIDTHS = floatArrayOf(3f, 2f, 2f, 2f)
+        val BALANCE_TABLE_WIDTHS = floatArrayOf(3f, 2f, 2f)
+        val SETTLEMENTS_TABLE_WIDTHS = floatArrayOf(2f, 2f, 2f, 2f)
     }
 }
+
+class ImageNotFoundException(override val message: String?) : RuntimeException()

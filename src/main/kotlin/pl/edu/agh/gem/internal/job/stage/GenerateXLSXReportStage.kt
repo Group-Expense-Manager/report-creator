@@ -2,12 +2,14 @@ package pl.edu.agh.gem.internal.job.stage
 
 import org.apache.poi.ss.usermodel.CellType.NUMERIC
 import org.apache.poi.ss.usermodel.CellType.STRING
-import org.apache.poi.ss.usermodel.FillPatternType
+import org.apache.poi.ss.usermodel.FillPatternType.SOLID_FOREGROUND
+import org.apache.poi.ss.usermodel.FillPatternType.THIN_FORWARD_DIAG
 import org.apache.poi.ss.usermodel.Font
 import org.apache.poi.ss.usermodel.IndexedColors.BLACK
 import org.apache.poi.ss.usermodel.IndexedColors.GREY_25_PERCENT
 import org.apache.poi.ss.usermodel.IndexedColors.LIGHT_BLUE
 import org.apache.poi.ss.usermodel.IndexedColors.WHITE
+import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.bson.types.Binary
@@ -64,7 +66,7 @@ class GenerateXLSXReportStage : GenerateReportStage() {
         summaryCellStyle: XSSFCellStyle,
     ) {
         val summarySheet = this.createSheet("Summary")
-        summarySheet.setColumnWidth(0, 30 * 256)
+        summarySheet.setColumnWidth(0, SUMMARY_SHEET_COLUMN_WIDTH)
 
         var rowIndex = 0
 
@@ -74,20 +76,60 @@ class GenerateXLSXReportStage : GenerateReportStage() {
         val formattedStartDate = startDate?.let { dateFormatter.format(it) }
         val formattedEndDate = endDate?.let { dateFormatter.format(it) }
 
-        summarySheet.createRow(rowIndex++).apply {
+        addTitleToSummary(summarySheet, rowIndex++, groupDetails, titleStyle)
+        addSubtitleToSummary(summarySheet, rowIndex++, formattedStartDate, formattedEndDate, subHeaderStyle)
+        summarySheet.createRow(rowIndex++)
+        addHeaderToSummary(summarySheet, rowIndex++, summaryHeaderStyle)
+        addSummaryTableHeader(summarySheet, rowIndex++, summaryHeaderStyle)
+        addSummaryTableData(summarySheet, rowIndex, activities, summaryCellStyle)
+
+        for (i in 0..NUM_OF_COLUMNS_IN_SUMMARY_TABLE) {
+            summarySheet.autoSizeColumn(i)
+        }
+    }
+
+    private fun addTitleToSummary(
+        summarySheet: Sheet,
+        rowIndex: Int,
+        groupDetails: GroupDetails,
+        titleStyle: XSSFCellStyle,
+    ) {
+        summarySheet.createRow(rowIndex).apply {
             createCell(0).setCellValue("Activities Summary for group ${groupDetails.name}")
             getCell(0).cellStyle = titleStyle
         }
-        summarySheet.createRow(rowIndex++).apply {
+    }
+
+    private fun addSubtitleToSummary(
+        summarySheet: Sheet,
+        rowIndex: Int,
+        formattedStartDate: String?,
+        formattedEndDate: String?,
+        subHeaderStyle: XSSFCellStyle,
+    ) {
+        summarySheet.createRow(rowIndex).apply {
             createCell(0).setCellValue("Report generated from $formattedStartDate to $formattedEndDate")
             getCell(0).cellStyle = subHeaderStyle
         }
-        summarySheet.createRow(rowIndex++)
-        summarySheet.createRow(rowIndex++).apply {
+    }
+
+    private fun addHeaderToSummary(
+        summarySheet: Sheet,
+        rowIndex: Int,
+        summaryHeaderStyle: XSSFCellStyle,
+    ) {
+        summarySheet.createRow(rowIndex).apply {
             createCell(0).setCellValue("Activities Summary by Type, Status, and Currency")
             getCell(0).cellStyle = summaryHeaderStyle
         }
-        val headerRow = summarySheet.createRow(rowIndex++)
+    }
+
+    private fun addSummaryTableHeader(
+        summarySheet: Sheet,
+        rowIndex: Int,
+        summaryHeaderStyle: XSSFCellStyle,
+    ) {
+        val headerRow = summarySheet.createRow(rowIndex)
         var columnIndex = 0
         headerRow.createCell(columnIndex++).apply {
             setCellValue("Type")
@@ -105,10 +147,19 @@ class GenerateXLSXReportStage : GenerateReportStage() {
             setCellValue("Count")
             cellStyle = summaryHeaderStyle
         }
-        headerRow.createCell(columnIndex++).apply {
+        headerRow.createCell(columnIndex).apply {
             setCellValue("Total Amount")
             cellStyle = summaryHeaderStyle
         }
+    }
+
+    private fun addSummaryTableData(
+        summarySheet: Sheet,
+        rowIndex: Int,
+        activities: List<GroupActivities>,
+        summaryCellStyle: XSSFCellStyle,
+    ) {
+        var currentRowIndex = rowIndex
         activities.flatMap { groupActivity ->
             groupActivity.activities.map { activity ->
                 Triple(activity.type, activity.status, groupActivity.currency) to activity.value
@@ -118,8 +169,8 @@ class GenerateXLSXReportStage : GenerateReportStage() {
                 val count = values.size
                 val totalAmount = values.reduce(BigDecimal::add)
                 val (type, status, currency) = typeStatusCurrency
-                val row = summarySheet.createRow(rowIndex++)
-                columnIndex = 0
+                val row = summarySheet.createRow(currentRowIndex++)
+                var columnIndex = 0
                 row.createCell(columnIndex++).apply {
                     setCellValue(type.toString())
                     cellStyle = summaryCellStyle
@@ -136,15 +187,11 @@ class GenerateXLSXReportStage : GenerateReportStage() {
                     setCellValue(count.toDouble())
                     cellStyle = summaryCellStyle
                 }
-                row.createCell(columnIndex++).apply {
+                row.createCell(columnIndex).apply {
                     setCellValue(totalAmount.toDouble())
                     cellStyle = summaryCellStyle
                 }
             }
-
-        for (i in 0..4) {
-            summarySheet.autoSizeColumn(i)
-        }
     }
 
     private fun XSSFWorkbook.writeBalances(
@@ -290,9 +337,9 @@ class GenerateXLSXReportStage : GenerateReportStage() {
         val headerFont: Font = workbook.createFont()
         headerFont.bold = true
         headerFont.color = whiteColor.index
-        val headerStyle: XSSFCellStyle = workbook.createCellStyle() as XSSFCellStyle
-        headerStyle.setFillForegroundColor(primaryColor.index)
-        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+        val headerStyle: XSSFCellStyle = workbook.createCellStyle()
+        headerStyle.fillForegroundColor = primaryColor.index
+        headerStyle.fillPattern = SOLID_FOREGROUND
         headerStyle.setFont(headerFont)
         return headerStyle
     }
@@ -300,9 +347,9 @@ class GenerateXLSXReportStage : GenerateReportStage() {
     private fun createTitleStyle(workbook: XSSFWorkbook): XSSFCellStyle {
         val titleFont = workbook.createFont()
         titleFont.bold = true
-        titleFont.fontHeightInPoints = 16
+        titleFont.fontHeightInPoints = TITLE_FONT_SIZE
         titleFont.color = blackColor.index
-        val titleStyle = workbook.createCellStyle() as XSSFCellStyle
+        val titleStyle = workbook.createCellStyle()
         titleStyle.setFont(titleFont)
         return titleStyle
     }
@@ -310,9 +357,9 @@ class GenerateXLSXReportStage : GenerateReportStage() {
     private fun createSubHeaderStyle(workbook: XSSFWorkbook): XSSFCellStyle {
         val subHeaderFont = workbook.createFont()
         subHeaderFont.italic = true
-        subHeaderFont.fontHeightInPoints = 14
+        subHeaderFont.fontHeightInPoints = SUBHEADER_FONT_SIZE
         subHeaderFont.color = blackColor.index
-        val subHeaderStyle = workbook.createCellStyle() as XSSFCellStyle
+        val subHeaderStyle = workbook.createCellStyle()
         subHeaderStyle.setFont(subHeaderFont)
         return subHeaderStyle
     }
@@ -321,9 +368,9 @@ class GenerateXLSXReportStage : GenerateReportStage() {
         val summaryHeaderFont = workbook.createFont()
         summaryHeaderFont.bold = true
         summaryHeaderFont.color = blackColor.index
-        val summaryHeaderStyle = workbook.createCellStyle() as XSSFCellStyle
-        summaryHeaderStyle.setFillForegroundColor(secondaryColor.index)
-        summaryHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+        val summaryHeaderStyle = workbook.createCellStyle()
+        summaryHeaderStyle.fillForegroundColor = secondaryColor.index
+        summaryHeaderStyle.fillPattern = SOLID_FOREGROUND
         summaryHeaderStyle.setFont(summaryHeaderFont)
         return summaryHeaderStyle
     }
@@ -331,9 +378,9 @@ class GenerateXLSXReportStage : GenerateReportStage() {
     private fun createSummaryCellStyle(workbook: XSSFWorkbook): XSSFCellStyle {
         val summaryCellFont = workbook.createFont()
         summaryCellFont.color = blackColor.index
-        val summaryCellStyle = workbook.createCellStyle() as XSSFCellStyle
-        summaryCellStyle.setFillForegroundColor(GREY_25_PERCENT.index)
-        summaryCellStyle.setFillPattern(FillPatternType.THIN_FORWARD_DIAG)
+        val summaryCellStyle = workbook.createCellStyle()
+        summaryCellStyle.fillForegroundColor = GREY_25_PERCENT.index
+        summaryCellStyle.fillPattern = THIN_FORWARD_DIAG
         summaryCellStyle.setFont(summaryCellFont)
         return summaryCellStyle
     }
@@ -341,7 +388,7 @@ class GenerateXLSXReportStage : GenerateReportStage() {
     private fun createDataCellStyle(workbook: XSSFWorkbook): XSSFCellStyle {
         val dataCellFont = workbook.createFont()
         dataCellFont.color = blackColor.index
-        val dataCellStyle = workbook.createCellStyle() as XSSFCellStyle
+        val dataCellStyle = workbook.createCellStyle()
         dataCellStyle.setFont(dataCellFont)
         return dataCellStyle
     }
@@ -354,5 +401,10 @@ class GenerateXLSXReportStage : GenerateReportStage() {
         val dateFormatter: DateTimeFormatter =
             DateTimeFormatter.ofPattern("dd MMM YYYY HH:mm")
                 .withZone(ZoneId.systemDefault())
+
+        const val SUMMARY_SHEET_COLUMN_WIDTH = 30 * 256
+        const val TITLE_FONT_SIZE = 16.toShort()
+        const val SUBHEADER_FONT_SIZE = 14.toShort()
+        const val NUM_OF_COLUMNS_IN_SUMMARY_TABLE = 4
     }
 }

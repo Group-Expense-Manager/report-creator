@@ -29,7 +29,7 @@ class AttachmentStoreClientIT(
             result.id.shouldNotBeNull()
         }
 
-        should("handle 4xx error response") {
+        should("handle 4xx error response for uploading attachment") {
             // given
             stubPostReport(groupId = GROUP_ID, userId = USER_ID, statusCode = BAD_REQUEST)
 
@@ -40,7 +40,7 @@ class AttachmentStoreClientIT(
             }
         }
 
-        should("handle 5xx error response") {
+        should("handle 5xx error response for uploading attachment") {
             // given
             stubPostReport(groupId = GROUP_ID, userId = USER_ID, statusCode = INTERNAL_SERVER_ERROR)
 
@@ -49,13 +49,14 @@ class AttachmentStoreClientIT(
                 attachmentStoreClient.uploadAttachment(GROUP_ID, USER_ID, Binary(ByteArray(0)))
             }
         }
+
         should("get attachment") {
             // given
             val attachmentId = "attachmentId"
             stubGetAttachment(groupId = GROUP_ID, attachmentId = attachmentId)
 
             // when
-            val result = attachmentStoreClient.getAttachment(GROUP_ID, USER_ID)
+            val result = attachmentStoreClient.getAttachment(GROUP_ID, attachmentId)
 
             // then
             result.shouldNotBeNull()
@@ -69,7 +70,7 @@ class AttachmentStoreClientIT(
             // when & then
             // workaround for IOException
             shouldThrow<Exception> {
-                attachmentStoreClient.getAttachment(GROUP_ID, USER_ID)
+                attachmentStoreClient.getAttachment(GROUP_ID, attachmentId)
             }
         }
 
@@ -80,7 +81,7 @@ class AttachmentStoreClientIT(
 
             // when & then
             shouldThrow<RetryableAttachmentStoreClientException> {
-                attachmentStoreClient.getAttachment(GROUP_ID, USER_ID)
+                attachmentStoreClient.getAttachment(GROUP_ID, attachmentId)
             }
         }
     })
