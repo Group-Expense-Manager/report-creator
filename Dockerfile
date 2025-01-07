@@ -11,6 +11,8 @@ WORKDIR /home/gradle/src
 RUN gradle clean bootJar --no-daemon
 
 FROM amazoncorretto:21-alpine-jdk
+RUN apk add --no-cache msttcorefonts-installer fontconfig
+RUN update-ms-fonts
 RUN mkdir /app
 COPY --from=build /home/gradle/src/build/libs/*.jar /app/app.jar
 WORKDIR /app
