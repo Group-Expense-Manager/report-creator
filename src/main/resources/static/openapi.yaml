@@ -1,0 +1,106 @@
+openapi: 3.0.1
+info:
+  title: Report Creator API
+  version: v1
+  description: API for generating user reports.
+
+paths:
+  /external/generate/groups/{groupId}:
+    post:
+      summary: "POST external/generate/groups/{groupId}"
+      operationId: "generateReport"
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      requestBody:
+        $ref: "#/components/requestBodies/GenerateReportRequest"
+      responses:
+        "200":
+          description: "OK"
+        "403":
+          $ref: '#/components/responses/UserWithoutGroupAccessException'
+
+components:
+  parameters:
+    GroupId:
+      name: groupId
+      in: path
+      required: true
+      schema:
+        type: string
+        example: "53f34d91-0172-4674-af73-813a666de1a9"
+      description: The ID of the group.
+
+  requestBodies:
+    GenerateReportRequest:
+      description: Request body for generating a report.
+      content:
+        application/vnd.gem.internal.v1+json:
+          schema:
+            $ref: '#/components/schemas/GenerateReportRequest'
+          examples:
+            exampleGroupAttachmentResponse:
+              value:
+                title: "Report from holiday"
+                format: "PDF"
+
+  responses:
+    UserWithoutGroupAccessException:
+      description: User without group access.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SimpleErrorsHolder'
+          examples:
+            exampleNotFound:
+              value:
+                errors:
+                  - code: "UserWithoutGroupAccessException"
+                    details: "UserWithoutGroupAccessException"
+                    message: "User with id:$userId is not a member of the group"
+                    userMessage: "User with id:$userId is not a member of the group"
+
+  schemas:
+    GenerateReportRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title of report.
+          example: "Report from holiday"
+        format:
+          type: string
+          description: The format of report. [PDF, XLSX]
+          example: "PDF"
+    SimpleErrorsHolder:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                nullable: true
+                description: Error code.
+                example: "INVALID_VALUE"
+              message:
+                type: string
+                nullable: true
+                description: Error message.
+                example: "The provided value is invalid."
+              details:
+                type: string
+                nullable: true
+                description: Additional error details.
+                example: "The field 'email' must contain a valid email address."
+              path:
+                type: string
+                nullable: true
+                description: The API path related to the error.
+                example: "/external/users/{userId}/attachments/{attachmentId}"
+              userMessage:
+                type: string
+                nullable: true
+                description: A user-friendly error message.
+                example: "Please provide a valid email address."

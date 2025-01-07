@@ -111,3 +111,10 @@ report-job-processor:
     - 4h
     - 12h
     - 24h
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    url: /openapi.yaml
+  api-docs:
+    path: /v3/api-docs
