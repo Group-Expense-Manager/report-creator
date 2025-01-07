@@ -1,8 +1,8 @@
 openapi: 3.0.1
 info:
-  title: Attachment API
+  title: Report Creator API
   version: v1
-  description: API for managing user and group attachments.
+  description: API for generating user reports.
 
 paths:
   /external/generate/groups/{groupId}:
