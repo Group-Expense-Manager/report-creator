@@ -1,5 +1,6 @@
 package pl.edu.agh.gem.integration.job
 
+import io.kotest.datatest.withData
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -13,13 +14,15 @@ import pl.edu.agh.gem.helper.user.DummyUser.USER_ID
 import pl.edu.agh.gem.integration.BaseIntegrationSpec
 import pl.edu.agh.gem.integration.ability.stubEmailSenderReportNotification
 import pl.edu.agh.gem.integration.ability.stubGetActivities
+import pl.edu.agh.gem.integration.ability.stubGetAttachment
 import pl.edu.agh.gem.integration.ability.stubGetBalances
 import pl.edu.agh.gem.integration.ability.stubGetSettlements
 import pl.edu.agh.gem.integration.ability.stubGetUsersDetails
 import pl.edu.agh.gem.integration.ability.stubGroupManagerGroupDetails
-import pl.edu.agh.gem.integration.ability.stubPostReportUrl
+import pl.edu.agh.gem.integration.ability.stubPostReport
 import pl.edu.agh.gem.integration.ability.verifyEmailSenderReportNotification
 import pl.edu.agh.gem.integration.ability.verifyPostReportUrl
+import pl.edu.agh.gem.internal.model.report.ReportFormat
 import pl.edu.agh.gem.internal.persistence.ReportJobRepository
 import pl.edu.agh.gem.internal.persistence.ReportRepository
 import pl.edu.agh.gem.util.createActivitiesResponse
@@ -41,57 +44,65 @@ class ReportJobIT(
     private val reportRepository: ReportRepository,
 ) : BaseIntegrationSpec({
 
-        should("process report job successfully") {
-            // given
-            val startedTime = testClock.instant()
-            whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
+        context("process report job successfully:") {
+            withData(
+                nameFn = { it.name },
+                ReportFormat.PDF,
+                ReportFormat.XLSX,
+            ) { format ->
+                // given
+                val startedTime = testClock.instant()
+                whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
 
-            val attachmentResponse = createAttachment()
-            stubPostReportUrl(attachmentResponse, GROUP_ID, USER_ID)
-            stubEmailSenderReportNotification()
-            val activitiesResponse = createActivitiesResponse()
-            stubGetActivities(activitiesResponse, GROUP_ID)
-            val balancesResponse = createBalancesResponse()
-            stubGetBalances(balancesResponse, GROUP_ID)
-            val settlementsResponse = createSettlementsResponse()
-            stubGetSettlements(settlementsResponse, GROUP_ID)
-            val members = createMembersDto(USER_ID, OTHER_USER_ID)
-            val listOfCurrencies = createCurrenciesDto("PLN", "USD", "EUR")
-            val groupResponse = createGroupResponse(members = members, groupCurrencies = listOfCurrencies)
-            stubGroupManagerGroupDetails(groupResponse, GROUP_ID)
-            val groupUsersDetails = createGroupUsersDetailsResponse()
-            stubGetUsersDetails(groupUsersDetails, GROUP_ID)
+                val attachmentResponse = createAttachment()
+                stubPostReport(attachmentResponse, GROUP_ID, USER_ID)
+                stubEmailSenderReportNotification()
+                val activitiesResponse = createActivitiesResponse()
+                stubGetActivities(activitiesResponse, GROUP_ID)
+                val balancesResponse = createBalancesResponse()
+                stubGetBalances(balancesResponse, GROUP_ID)
+                val settlementsResponse = createSettlementsResponse()
+                stubGetSettlements(settlementsResponse, GROUP_ID)
+                val members = createMembersDto(USER_ID, OTHER_USER_ID)
+                val listOfCurrencies = createCurrenciesDto("PLN", "USD", "EUR")
+                val groupResponse = createGroupResponse(members = members, groupCurrencies = listOfCurrencies)
+                stubGroupManagerGroupDetails(groupResponse, GROUP_ID)
+                val groupUsersDetails = createGroupUsersDetailsResponse()
+                stubGetUsersDetails(groupUsersDetails, GROUP_ID)
+                stubGetAttachment(groupId = GROUP_ID, attachmentId = groupResponse.attachmentId)
 
-            val reportJob =
-                createReportJob(
-                    groupId = GROUP_ID,
-                    creatorId = USER_ID,
-                    balances = null,
-                    activities = null,
-                    settlements = null,
-                    groupDetails = null,
-                    usersDetails = null,
-                    file = null,
-                    attachmentId = null,
-                    nextProcessAt = FIXED_TIME,
-                )
+                val reportJob =
+                    createReportJob(
+                        groupId = GROUP_ID,
+                        creatorId = USER_ID,
+                        balances = null,
+                        activities = null,
+                        settlements = null,
+                        groupDetails = null,
+                        usersDetails = null,
+                        file = null,
+                        attachmentId = null,
+                        nextProcessAt = FIXED_TIME,
+                        format = format,
+                    )
 
-            // when
-            reportJobRepository.save(reportJob)
+                // when
+                reportJobRepository.save(reportJob)
 
-            // then
-            waitTillExchangePlan(reportJobRepository, reportJob.id)
-            val report = reportRepository.getReport(reportJob.id)
-            report.shouldNotBeNull()
-            report.id shouldBe reportJob.id
-            report.groupId shouldBe reportJob.groupId
-            report.createdAt.shouldNotBeNull()
-            report.creatorId shouldBe reportJob.creatorId
-            report.attachmentId shouldBe attachmentResponse.id
-            report.format shouldBe reportJob.format
+                // then
+                waitTillExchangePlan(reportJobRepository, reportJob.id)
+                val report = reportRepository.getReport(reportJob.id)
+                report.shouldNotBeNull()
+                report.id shouldBe reportJob.id
+                report.groupId shouldBe reportJob.groupId
+                report.createdAt.shouldNotBeNull()
+                report.creatorId shouldBe reportJob.creatorId
+                report.attachmentId shouldBe attachmentResponse.id
+                report.format shouldBe reportJob.format
 
-            verifyPostReportUrl(GROUP_ID, USER_ID)
-            verifyEmailSenderReportNotification()
+                verifyPostReportUrl(GROUP_ID, USER_ID)
+                verifyEmailSenderReportNotification()
+            }
         }
 
         should("retry report job successfully") {
@@ -99,7 +110,7 @@ class ReportJobIT(
             val startedTime = testClock.instant()
             whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
             val attachmentResponse = createAttachment()
-            stubPostReportUrl(attachmentResponse, GROUP_ID, USER_ID, INTERNAL_SERVER_ERROR)
+            stubPostReport(attachmentResponse, GROUP_ID, USER_ID, INTERNAL_SERVER_ERROR)
             stubEmailSenderReportNotification(INTERNAL_SERVER_ERROR)
             val activitiesResponse = createActivitiesResponse()
             stubGetActivities(activitiesResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
@@ -136,7 +147,7 @@ class ReportJobIT(
             reportRepository.getReport(reportJob.id).shouldBeNull()
 
             // when
-            stubPostReportUrl(attachmentResponse, GROUP_ID, USER_ID)
+            stubPostReport(attachmentResponse, GROUP_ID, USER_ID)
             stubEmailSenderReportNotification()
             stubGetActivities(activitiesResponse, GROUP_ID)
             stubGetBalances(balancesResponse, GROUP_ID)

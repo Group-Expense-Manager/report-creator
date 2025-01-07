@@ -13,6 +13,7 @@ data class Report(
 
 enum class ReportFormat {
     XLSX,
+    PDF,
 }
 
 fun ReportJob.toReport(attachmentId: String) =

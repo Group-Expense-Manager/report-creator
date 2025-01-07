@@ -5,6 +5,7 @@ import pl.edu.agh.gem.internal.model.group.GroupDetails
 import pl.edu.agh.gem.model.GroupMember
 
 data class GroupResponse(
+    val groupId: String,
     val members: List<MemberDto>,
     val groupCurrencies: List<CurrencyDto>,
     val name: String,
@@ -21,6 +22,7 @@ data class CurrencyDto(
 
 fun GroupResponse.toDomain() =
     GroupDetails(
+        groupId = groupId,
         members = members.map { GroupMember(it.id) },
         groupCurrencies = groupCurrencies.map { Currency(it.code) },
         name = name,

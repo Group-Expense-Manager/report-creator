@@ -126,6 +126,7 @@ fun UsersDetails.toEntity(): UsersDetailsEntity {
 }
 
 data class GroupDetailsEntity(
+    val groupId: String,
     val members: List<GroupMemberEntity>,
     val groupCurrencies: List<CurrencyEntity>,
     val name: String,
@@ -150,6 +151,7 @@ fun Currency.toEntity(): CurrencyEntity {
 
 fun GroupDetailsEntity.toDomain(): GroupDetails {
     return GroupDetails(
+        groupId = groupId,
         members = members.map { it.toDomain() },
         groupCurrencies = groupCurrencies.map { it.toDomain() },
         name = name,
@@ -159,6 +161,7 @@ fun GroupDetailsEntity.toDomain(): GroupDetails {
 
 fun GroupDetails.toEntity(): GroupDetailsEntity {
     return GroupDetailsEntity(
+        groupId = groupId,
         members = members.map { it.toEntity() },
         groupCurrencies = groupCurrencies.map { it.toEntity() },
         name = name,
