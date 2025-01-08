@@ -2,20 +2,23 @@ openapi: 3.0.1
 info:
   title: Report Creator API
   version: v1
-  description: API for generating user reports.
+  description: API for generating group reports.
 
 paths:
   /external/generate/groups/{groupId}:
     post:
-      summary: "POST external/generate/groups/{groupId}"
-      operationId: "generateReport"
+      tags:
+        - External Report
+      summary: "Generate a report for a group"
+      description: "Generates a report for the specified group. This endpoint allows users to generate reports based on the provided request body."
+      operationId: "generateGroupReport"
       parameters:
         - $ref: '#/components/parameters/GroupId'
       requestBody:
         $ref: "#/components/requestBodies/GenerateReportRequest"
       responses:
         "200":
-          description: "OK"
+          description: "Report generated successfully"
         "403":
           $ref: '#/components/responses/UserWithoutGroupAccessException'
 
@@ -38,7 +41,7 @@ components:
           schema:
             $ref: '#/components/schemas/GenerateReportRequest'
           examples:
-            exampleGroupAttachmentResponse:
+            exampleGenerateReportRequest:
               value:
                 title: "Report from holiday"
                 format: "PDF"
@@ -51,7 +54,7 @@ components:
           schema:
             $ref: '#/components/schemas/SimpleErrorsHolder'
           examples:
-            exampleNotFound:
+            exampleUserWithoutGroupAccessException:
               value:
                 errors:
                   - code: "UserWithoutGroupAccessException"
