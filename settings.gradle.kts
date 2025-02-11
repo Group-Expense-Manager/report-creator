@@ -28,7 +28,7 @@ dependencyResolutionManagement {
             version("dependency-management", "1.1.7")
 
             library("guava", "com.google.guava:guava:33.4.0-jre")
-            library("kotlinlogging", "io.github.oshai:kotlin-logging-jvm:7.0.3")
+            library("kotlinlogging", "io.github.oshai:kotlin-logging-jvm:7.0.4")
             library("kotlinx-coroutines", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
             library("lib-gem", "pl.edu.agh.gem:lib-gem:0.5.2")
 
@@ -69,7 +69,7 @@ dependencyResolutionManagement {
                 "2.0.2",
             )
             library("mockito", "org.mockito.kotlin:mockito-kotlin:5.4.0")
-            library("archunit", "com.tngtech.archunit:archunit-junit5:1.3.0")
+            library("archunit", "com.tngtech.archunit:archunit-junit5:1.4.0")
 
             library("kotlinx-coroutines-test", "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
 
